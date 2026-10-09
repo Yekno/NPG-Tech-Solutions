@@ -1,0 +1,9 @@
+name: Maintenance & Support
+summary: Keep your site secure, up to date and running smoothly.
+description: Ongoing care for your website — updates, backups, monitoring and quick fixes — so you can focus on running your business.
+included:
+  - Security and software updates
+  - Backups and uptime monitoring
+  - Content changes and small fixes
+  - Monthly health reports
+order: 4

@@ -1,0 +1,289 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/logo-horizontal.png';
+import { mainNav, ctaLinks, site } from '../data/site';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
+---
+
+<header class="site-header" data-site-header>
+  <div class="container site-header__inner">
+    <a href="/" class="site-header__logo" aria-label={`${site.name} — home`}>
+      <Image src={logo} alt="" width={240} densities={[1, 2]} loading="eager" fetchpriority="high" />
+    </a>
+
+    <nav class="site-nav" aria-label="Main">
+      <button
+        class="site-nav__toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-menu"
+        data-menu-toggle
+      >
+        <span class="visually-hidden">Menu</span>
+        <span class="burger" aria-hidden="true"><span></span><span></span><span></span></span>
+      </button>
+
+      <div class="site-nav__menu" id="site-menu" data-menu>
+        <ul role="list" class="site-nav__list">
+          {
+            mainNav.map((item, i) => (
+              <li style={`--i:${i}`}>
+                <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="site-nav__ctas">
+          <a href={ctaLinks.join.href} class="site-nav__join">{ctaLinks.join.label}</a>
+          <a href={ctaLinks.request.href} class="btn" data-magnetic>
+            {ctaLinks.request.label} <span class="btn__arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+  </div>
+  <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  if (toggle && menu) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      document.documentElement.classList.toggle('menu-open', open);
+    };
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) setOpen(false);
+    });
+    window.matchMedia('(min-width: 72rem)').addEventListener('change', () => setOpen(false));
+  }
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgb(255 255 255 / 0.85);
+    backdrop-filter: saturate(1.6) blur(14px);
+    -webkit-backdrop-filter: saturate(1.6) blur(14px);
+    border-bottom: 1px solid transparent;
+    transition:
+      box-shadow var(--dur) var(--ease-out),
+      border-color var(--dur) var(--ease-out);
+  }
+  .site-header:global(.is-scrolled) {
+    border-color: var(--color-line);
+    box-shadow: var(--shadow-sm);
+  }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    min-height: var(--header-h);
+  }
+  .site-header__logo {
+    display: block;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+  }
+  .site-header__logo img {
+    width: clamp(10rem, 8rem + 6vw, 13.5rem);
+    height: auto;
+  }
+
+  .scroll-progress {
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-blue), var(--color-blue-400));
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  /* Mobile-first: off-canvas menu */
+  .site-nav__toggle {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    background: var(--color-white);
+  }
+  .burger {
+    display: grid;
+    gap: 5px;
+    width: 1.25rem;
+  }
+  .burger span {
+    display: block;
+    height: 2px;
+    background: var(--color-navy);
+    border-radius: 2px;
+    transition:
+      transform var(--dur) var(--ease-out),
+      opacity var(--dur-fast);
+  }
+  :global(.menu-open) .burger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  :global(.menu-open) .burger span:nth-child(2) {
+    opacity: 0;
+  }
+  :global(.menu-open) .burger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  .site-nav__menu {
+    position: fixed;
+    inset: var(--header-h) 0 auto 0;
+    height: calc(100dvh - var(--header-h));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-8);
+    padding: var(--space-8) var(--gutter);
+    background: var(--color-white);
+    overflow-y: auto;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-12px);
+    transition:
+      opacity var(--dur) var(--ease-out),
+      transform var(--dur) var(--ease-out),
+      visibility 0s linear var(--dur);
+  }
+  :global(.menu-open) .site-nav__menu {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition-delay: 0s;
+  }
+  :global(.menu-open) body {
+    overflow: hidden;
+  }
+  .site-nav__list {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .site-nav__list a {
+    display: block;
+    padding: var(--space-2) 0;
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    color: var(--color-navy);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+  .site-nav__list a[aria-current='page'] {
+    color: var(--color-blue);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .site-nav__list li {
+      opacity: 0;
+      transform: translateY(16px);
+      transition:
+        opacity var(--dur) var(--ease-out),
+        transform var(--dur) var(--ease-out);
+    }
+    :global(.menu-open) .site-nav__list li {
+      opacity: 1;
+      transform: none;
+      transition-delay: calc(var(--i) * 60ms + 100ms);
+    }
+  }
+  .site-nav__ctas {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .site-nav__join {
+    font-weight: 700;
+    color: var(--color-navy);
+  }
+
+  @media (min-width: 72rem) {
+    .site-nav__toggle {
+      display: none;
+    }
+    .site-nav {
+      flex: 1;
+    }
+    .site-nav__menu {
+      position: static;
+      height: auto;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0;
+      background: none;
+      overflow: visible;
+      visibility: visible;
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .site-nav__list {
+      display: flex;
+      gap: var(--space-1);
+      margin-inline: auto;
+    }
+    .site-nav__list li {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .site-nav__list a {
+      position: relative;
+      padding: var(--space-2) var(--space-3);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+    .site-nav__list a::after {
+      content: '';
+      position: absolute;
+      left: var(--space-3);
+      right: var(--space-3);
+      bottom: 2px;
+      height: 2px;
+      background: var(--color-blue);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform var(--dur) var(--ease-out);
+    }
+    .site-nav__list a:hover::after,
+    .site-nav__list a[aria-current='page']::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+    .site-nav__ctas {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+    }
+    .site-nav__join {
+      font-size: var(--text-sm);
+      text-decoration: none;
+    }
+    .site-nav__join:hover {
+      text-decoration: underline;
+    }
+  }
+</style>

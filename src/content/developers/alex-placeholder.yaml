@@ -1,0 +1,10 @@
+# PLACEHOLDER — replace with a real team member before launch.
+name: Alex Placeholder
+role: Full-stack Developer
+skills: [TypeScript, Astro, React, Node.js, PostgreSQL]
+specialties: [Web applications, API design]
+bio: Builds fast, reliable web apps end to end, from database to interface.
+links:
+  github: https://github.com/
+  linkedin: https://www.linkedin.com/
+order: 1

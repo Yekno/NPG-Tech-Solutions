@@ -1,0 +1,9 @@
+name: E-commerce
+summary: Online stores that make buying easy.
+description: We set up and customise online stores — product catalogues, secure checkout, payments and inventory — so you can start selling with confidence.
+included:
+  - Store setup and theming
+  - Payment and shipping integration
+  - Product catalogue and inventory
+  - Conversion-focused checkout
+order: 3

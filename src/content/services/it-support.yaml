@@ -1,0 +1,9 @@
+name: IT Support
+summary: Practical tech help for teams and small businesses.
+description: Setup and troubleshooting for the tools your team relies on every day — devices, email, accounts and networks.
+included:
+  - Device and software setup
+  - Business email and accounts
+  - Troubleshooting and remote help
+  - Basic network and security setup
+order: 5

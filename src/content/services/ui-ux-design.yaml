@@ -1,0 +1,9 @@
+name: UI/UX Design
+summary: Interfaces your customers understand at a glance.
+description: We research how your users think, then design clear, accessible interfaces and prototype them before a line of production code is written.
+included:
+  - User research and journey mapping
+  - Wireframes and interactive prototypes
+  - Visual design and design systems
+  - Accessibility review
+order: 2

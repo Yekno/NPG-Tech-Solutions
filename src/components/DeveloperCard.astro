@@ -1,0 +1,77 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Media from './Media.astro';
+
+interface Props {
+  developer: CollectionEntry<'developers'>;
+}
+
+const { developer } = Astro.props;
+const { name, photo, role, skills } = developer.data;
+const initials = name
+  .split(/\s+/)
+  .map((p) => p[0])
+  .join('')
+  .slice(0, 2)
+  .toUpperCase();
+---
+
+<article class="dev-card zoom-media" data-tilt>
+  <Media
+    src={photo}
+    alt={photo ? `Portrait of ${name}` : `${name} — photo coming soon`}
+    label={initials}
+    ratio="4 / 5"
+    sizes="(min-width: 64rem) 25vw, (min-width: 40rem) 45vw, 90vw"
+  />
+  <div class="dev-card__body">
+    <h3><a href={`/developers#${developer.id}`}>{name}</a></h3>
+    <p class="dev-card__role">{role}</p>
+    <p class="dev-card__skills">{skills.slice(0, 3).join(' · ')}</p>
+  </div>
+</article>
+
+<style>
+  .dev-card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-navy);
+    color: var(--color-white);
+    box-shadow: var(--shadow);
+  }
+  .dev-card__body {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: var(--space-12) var(--space-6) var(--space-6);
+    background: linear-gradient(to top, rgb(1 12 46 / 0.95), rgb(1 12 46 / 0.6) 60%, transparent);
+  }
+  .dev-card h3 {
+    font-size: var(--text-xl);
+  }
+  .dev-card h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .dev-card h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .dev-card h3 a:focus-visible {
+    outline: none;
+  }
+  .dev-card:has(a:focus-visible) {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+  .dev-card__role {
+    color: var(--color-blue-200);
+    font-weight: 600;
+  }
+  .dev-card__skills {
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: #c9d3ee;
+  }
+</style>

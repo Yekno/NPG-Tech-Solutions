@@ -1,0 +1,158 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/logo-horizontal.png';
+import { footerNav, ctaLinks, site } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="site-footer__glow" aria-hidden="true"></div>
+  <div class="container">
+    <div class="site-footer__cta" data-reveal="up">
+      <h2 class="site-footer__title">Have a project in mind?</h2>
+      <p>Tell us what you need and the right developers from our community will get back to you.</p>
+      <a href={ctaLinks.request.href} class="btn" data-magnetic>
+        {ctaLinks.request.label} <span class="btn__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        <a href="/" class="site-footer__logo" aria-label={`${site.name} — home`}>
+          <Image src={logo} alt="" width={260} densities={[1, 2]} />
+        </a>
+        <p>{site.description}</p>
+        <p class="site-footer__location">{site.location}</p>
+      </div>
+      {
+        footerNav.map((group) => (
+          <nav aria-label={`Footer — ${group.heading}`}>
+            <h2 class="site-footer__heading">{group.heading}</h2>
+            <ul role="list">
+              {group.links.map((link) => (
+                <li>
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+    </div>
+
+    <div class="site-footer__bottom">
+      <p>&copy; {year} {site.name}. All rights reserved.</p>
+      <p>{site.tagline}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-navy-900);
+    color: #c9d3ee;
+    padding-top: var(--section-pad);
+    --color-accent: var(--color-blue-200);
+  }
+  .site-footer__glow {
+    position: absolute;
+    top: -30%;
+    left: 50%;
+    width: 60rem;
+    height: 40rem;
+    translate: -50% 0;
+    background: radial-gradient(closest-side, rgb(6 85 225 / 0.35), transparent);
+    pointer-events: none;
+  }
+  .container {
+    position: relative;
+  }
+  .site-footer__cta {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-4);
+    padding-bottom: var(--space-16);
+    border-bottom: 1px solid rgb(255 255 255 / 0.1);
+  }
+  .site-footer__title {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: var(--color-white);
+  }
+  .site-footer__cta p {
+    max-width: 36rem;
+    font-size: var(--text-lg);
+  }
+  .site-footer__cta .btn::before {
+    background: var(--color-white);
+  }
+  .site-footer__cta .btn:hover {
+    color: var(--color-navy);
+    border-color: var(--color-white);
+  }
+
+  .site-footer__grid {
+    display: grid;
+    gap: var(--space-12);
+    padding-block: var(--space-16);
+  }
+  @media (min-width: 48rem) {
+    .site-footer__grid {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+  .site-footer__brand {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    max-width: 26rem;
+  }
+  /* The logo artwork has a white background, so it sits on a white plate. */
+  .site-footer__logo {
+    display: inline-block;
+    justify-self: start;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-white);
+    border-radius: var(--radius);
+  }
+  .site-footer__logo img {
+    width: 13rem;
+  }
+  .site-footer__location {
+    font-size: var(--text-sm);
+    color: #8fa0cc;
+  }
+  .site-footer__heading {
+    margin-bottom: var(--space-4);
+    font-size: var(--text-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-white);
+  }
+  nav ul {
+    display: grid;
+    gap: var(--space-3);
+  }
+  nav a {
+    color: #c9d3ee;
+    text-decoration: none;
+    transition: color var(--dur-fast);
+  }
+  nav a:hover {
+    color: var(--color-white);
+    text-decoration: underline;
+  }
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-6);
+    padding-block: var(--space-6);
+    border-top: 1px solid rgb(255 255 255 / 0.1);
+    font-size: var(--text-sm);
+    color: #8fa0cc;
+  }
+</style>

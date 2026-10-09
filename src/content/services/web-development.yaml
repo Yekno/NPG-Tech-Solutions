@@ -1,0 +1,9 @@
+name: Web Development
+summary: Fast, secure websites and web apps built to grow with your business.
+description: From marketing sites to custom web applications, we build on modern, well-supported technology so your site loads fast, ranks well and is easy to maintain.
+included:
+  - Custom website and web app development
+  - Responsive, mobile-first builds
+  - CMS setup so you can edit content
+  - Performance and SEO foundations
+order: 1
