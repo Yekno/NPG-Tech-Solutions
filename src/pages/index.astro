@@ -248,7 +248,7 @@ const steps = [
         </div>
         <a href="/developers" class="btn btn--ghost" data-reveal="up">Meet everyone</a>
       </div>
-      <ul role="list" class="devs" data-stagger="120">
+      <ul role="list" class="devs" data-stagger="120" tabindex="0" aria-label="Our developers">
         {
           developers.slice(0, 4).map((d) => (
             <li data-reveal="zoom">
@@ -924,10 +924,37 @@ const steps = [
   }
 
   /* ---------- Developers ---------- */
+  /* Phones: a swipeable row (like the portfolio carousel) to keep the page short.
+     Wider screens: a regular grid. */
   .devs {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
-    gap: var(--space-6);
+    grid-auto-flow: column;
+    grid-auto-columns: min(72vw, 17rem);
+    gap: var(--space-4);
+    margin-inline: calc(var(--gutter) * -1);
+    padding: var(--space-2) var(--gutter) var(--space-6);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+  .devs::-webkit-scrollbar {
+    display: none;
+  }
+  .devs > li {
+    scroll-snap-align: start;
+  }
+  @media (min-width: 48rem) {
+    .devs {
+      grid-auto-flow: row;
+      grid-auto-columns: auto;
+      grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+      gap: var(--space-6);
+      margin-inline: 0;
+      padding: 0;
+      overflow: visible;
+    }
   }
 
   /* ---------- Testimonials ---------- */

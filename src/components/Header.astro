@@ -235,6 +235,13 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   .island__name span {
     color: var(--color-blue-200);
   }
+  /* Very narrow phones (under ~360px): tighten the wordmark so the buttons still fit */
+  @media (max-width: 22.5rem) {
+    .island__name {
+      font-size: var(--text-xs);
+      letter-spacing: 0.06em;
+    }
+  }
 
   /* Collapsible link group: animates width via the 0fr ↔ 1fr grid trick */
   .island__collapse {
