@@ -226,12 +226,6 @@ ol[role='list'] {
   text-transform: uppercase;
   color: var(--color-accent);
 }
-.eyebrow::before {
-  content: '';
-  width: 1.5rem;
-  height: 2px;
-  background: currentColor;
-}
 .h-display {
   font-size: var(--text-3xl);
   font-weight: 800;
