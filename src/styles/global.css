@@ -54,8 +54,8 @@
   --space-12: 3rem;
   --space-16: 4rem;
   --section-pad: clamp(4rem, 3rem + 5vw, 7.5rem);
-  /* Height of the long gradient fade between sections of different colours */
-  --fade: clamp(9rem, 6rem + 10vw, 16rem);
+  /* Height of the gradient fade between sections of different colours */
+  --fade: clamp(5rem, 4rem + 4vw, 8rem);
   --container: 75rem;
   --gutter: clamp(1rem, 0.5rem + 2.5vw, 2rem);
   /* Room the floating navigation island needs above page content */
@@ -218,46 +218,62 @@ ol[role='list'] {
 }
 /*
  * Coloured sections fade in from the page background and back out again, so there is
- * never a hard line between sections. Mixing in OKLab keeps the white↔navy blend clean
- * instead of passing through a muddy grey.
+ * never a hard line between sections. The fade is eased (smoothstep, 9 stops mixed in
+ * OKLab) rather than linear, so neither end of it shows a visible edge.
  */
 .section--surface {
-  background: linear-gradient(
-    to bottom,
-    var(--color-bg),
-    var(--color-surface) var(--fade),
-    var(--color-surface) calc(100% - var(--fade)),
-    var(--color-bg)
-  );
+  background: linear-gradient(to bottom, var(--color-bg), var(--color-surface) var(--fade), var(--color-surface) calc(100% - var(--fade)), var(--color-bg));
 }
 .section--dark {
   /* Extra padding keeps the light text clear of the light end of the fade */
-  padding-block: calc(var(--fade) + 1rem);
-  background: linear-gradient(
-    to bottom,
-    var(--color-bg),
-    var(--color-navy) var(--fade),
-    var(--color-navy) calc(100% - var(--fade)),
-    var(--color-bg)
-  );
+  padding-block: calc(var(--fade) + var(--space-8));
+  background: linear-gradient(to bottom, var(--color-bg), var(--color-navy) var(--fade), var(--color-navy) calc(100% - var(--fade)), var(--color-bg));
 }
-@supports (background: linear-gradient(in oklab, red, blue)) {
+@supports (color: color-mix(in oklab, red, blue)) {
   .section--surface {
     background: linear-gradient(
-      in oklab to bottom,
-      var(--color-bg),
-      var(--color-surface) var(--fade),
-      var(--color-surface) calc(100% - var(--fade)),
-      var(--color-bg)
+      to bottom,
+      var(--color-bg) 0%,
+      color-mix(in oklab, var(--color-surface) 4.3%, var(--color-bg)) calc(var(--fade) * 0.125),
+      color-mix(in oklab, var(--color-surface) 15.6%, var(--color-bg)) calc(var(--fade) * 0.25),
+      color-mix(in oklab, var(--color-surface) 31.6%, var(--color-bg)) calc(var(--fade) * 0.375),
+      color-mix(in oklab, var(--color-surface) 50.0%, var(--color-bg)) calc(var(--fade) * 0.5),
+      color-mix(in oklab, var(--color-surface) 68.4%, var(--color-bg)) calc(var(--fade) * 0.625),
+      color-mix(in oklab, var(--color-surface) 84.4%, var(--color-bg)) calc(var(--fade) * 0.75),
+      color-mix(in oklab, var(--color-surface) 95.7%, var(--color-bg)) calc(var(--fade) * 0.875),
+      var(--color-surface) calc(var(--fade) * 1),
+      var(--color-surface) calc(100% - var(--fade) * 1),
+      color-mix(in oklab, var(--color-surface) 95.7%, var(--color-bg)) calc(100% - var(--fade) * 0.875),
+      color-mix(in oklab, var(--color-surface) 84.4%, var(--color-bg)) calc(100% - var(--fade) * 0.75),
+      color-mix(in oklab, var(--color-surface) 68.4%, var(--color-bg)) calc(100% - var(--fade) * 0.625),
+      color-mix(in oklab, var(--color-surface) 50.0%, var(--color-bg)) calc(100% - var(--fade) * 0.5),
+      color-mix(in oklab, var(--color-surface) 31.6%, var(--color-bg)) calc(100% - var(--fade) * 0.375),
+      color-mix(in oklab, var(--color-surface) 15.6%, var(--color-bg)) calc(100% - var(--fade) * 0.25),
+      color-mix(in oklab, var(--color-surface) 4.3%, var(--color-bg)) calc(100% - var(--fade) * 0.125),
+      var(--color-bg) 100%
     );
   }
   .section--dark {
     background: linear-gradient(
-      in oklab to bottom,
-      var(--color-bg),
-      var(--color-navy) var(--fade),
-      var(--color-navy) calc(100% - var(--fade)),
-      var(--color-bg)
+      to bottom,
+      var(--color-bg) 0%,
+      color-mix(in oklab, var(--color-navy) 4.3%, var(--color-bg)) calc(var(--fade) * 0.125),
+      color-mix(in oklab, var(--color-navy) 15.6%, var(--color-bg)) calc(var(--fade) * 0.25),
+      color-mix(in oklab, var(--color-navy) 31.6%, var(--color-bg)) calc(var(--fade) * 0.375),
+      color-mix(in oklab, var(--color-navy) 50.0%, var(--color-bg)) calc(var(--fade) * 0.5),
+      color-mix(in oklab, var(--color-navy) 68.4%, var(--color-bg)) calc(var(--fade) * 0.625),
+      color-mix(in oklab, var(--color-navy) 84.4%, var(--color-bg)) calc(var(--fade) * 0.75),
+      color-mix(in oklab, var(--color-navy) 95.7%, var(--color-bg)) calc(var(--fade) * 0.875),
+      var(--color-navy) calc(var(--fade) * 1),
+      var(--color-navy) calc(100% - var(--fade) * 1),
+      color-mix(in oklab, var(--color-navy) 95.7%, var(--color-bg)) calc(100% - var(--fade) * 0.875),
+      color-mix(in oklab, var(--color-navy) 84.4%, var(--color-bg)) calc(100% - var(--fade) * 0.75),
+      color-mix(in oklab, var(--color-navy) 68.4%, var(--color-bg)) calc(100% - var(--fade) * 0.625),
+      color-mix(in oklab, var(--color-navy) 50.0%, var(--color-bg)) calc(100% - var(--fade) * 0.5),
+      color-mix(in oklab, var(--color-navy) 31.6%, var(--color-bg)) calc(100% - var(--fade) * 0.375),
+      color-mix(in oklab, var(--color-navy) 15.6%, var(--color-bg)) calc(100% - var(--fade) * 0.25),
+      color-mix(in oklab, var(--color-navy) 4.3%, var(--color-bg)) calc(100% - var(--fade) * 0.125),
+      var(--color-bg) 100%
     );
   }
 }

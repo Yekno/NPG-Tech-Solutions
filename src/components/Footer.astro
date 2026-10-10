@@ -54,14 +54,30 @@ const year = new Date().getFullYear();
     overflow: hidden;
     /* Long fade in from the page background, matching the section transitions */
     background: linear-gradient(to bottom, var(--color-bg), var(--color-navy-900) var(--fade));
-    background: linear-gradient(in oklab to bottom, var(--color-bg), var(--color-navy-900) var(--fade));
     color: #c9d3ee;
-    padding-top: calc(var(--fade) + 1rem);
+    padding-top: calc(var(--fade) + var(--space-8));
     --color-accent: var(--color-blue-200);
+  }
+  @supports (color: color-mix(in oklab, red, blue)) {
+    .site-footer {
+      /* Same eased fade as the page sections */
+      background: linear-gradient(
+        to bottom,
+        var(--color-bg) 0%,
+        color-mix(in oklab, var(--color-navy-900) 4.3%, var(--color-bg)) calc(var(--fade) * 0.125),
+        color-mix(in oklab, var(--color-navy-900) 15.6%, var(--color-bg)) calc(var(--fade) * 0.25),
+        color-mix(in oklab, var(--color-navy-900) 31.6%, var(--color-bg)) calc(var(--fade) * 0.375),
+        color-mix(in oklab, var(--color-navy-900) 50.0%, var(--color-bg)) calc(var(--fade) * 0.5),
+        color-mix(in oklab, var(--color-navy-900) 68.4%, var(--color-bg)) calc(var(--fade) * 0.625),
+        color-mix(in oklab, var(--color-navy-900) 84.4%, var(--color-bg)) calc(var(--fade) * 0.75),
+        color-mix(in oklab, var(--color-navy-900) 95.7%, var(--color-bg)) calc(var(--fade) * 0.875),
+        var(--color-navy-900) calc(var(--fade) * 1)
+      );
+    }
   }
   .site-footer__glow {
     position: absolute;
-    top: calc(var(--fade) - 12rem);
+    top: calc(var(--fade) - 8rem);
     left: 50%;
     width: 60rem;
     height: 40rem;
