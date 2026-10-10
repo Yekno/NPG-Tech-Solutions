@@ -346,7 +346,7 @@ const steps = [
     isolation: isolate;
     overflow: hidden;
     background: var(--color-bg);
-    padding-top: calc(var(--island-space) + clamp(2.5rem, 1rem + 5vw, 5rem));
+    padding-top: calc(var(--island-space) + clamp(1.5rem, 0.5rem + 3vw, 3.5rem));
     text-align: center;
   }
   .hero__bg {
@@ -425,7 +425,7 @@ const steps = [
   }
   .hero h1 {
     max-width: 20ch;
-    font-size: clamp(2.5rem, 1.4rem + 4.6vw, 5.25rem);
+    font-size: clamp(2.25rem, 1.3rem + 4vw, 4.5rem);
     line-height: 1.02;
     letter-spacing: -0.035em;
     color: var(--color-heading);
@@ -474,12 +474,13 @@ const steps = [
   /* ----- Showcase stage ----- */
   .hero__stage {
     position: relative;
-    margin-top: clamp(3rem, 2rem + 4vw, 5.5rem);
+    margin-top: clamp(1.5rem, 1rem + 2vw, 3rem);
   }
   .hero__glow {
     position: absolute;
-    /* Sits behind the top of the showcase so the blobs rise above it like a wave */
-    inset: -3rem -8% 35% -8%;
+    /* Rises well above the showcase (up behind the buttons) so the blue is visible
+       on first load, before any scrolling */
+    inset: -7rem -8% 35% -8%;
     z-index: -1;
     pointer-events: none;
     filter: blur(clamp(30px, 4vw, 60px));
