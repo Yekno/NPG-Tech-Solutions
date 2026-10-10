@@ -162,9 +162,9 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
 <style>
   /* Spring easing gives the island its "bouncy" morph */
   .island {
-    /* See-through glass. At 40% navy, white text over white page sections drops below
-       ideal contrast, so a soft text shadow helps keep the links legible. */
-    --island-bg: rgb(5 11 31 / 0.4);
+    /* See-through glass. 72% navy keeps the wordmark and links readable (about 5:1 or
+       better) even when the island sits over white sections. */
+    --island-bg: rgb(5 11 31 / 0.72);
     --island-bg-solid: rgb(5 11 31 / 0.94);
     --spring: cubic-bezier(0.34, 1.4, 0.64, 1);
     --morph: 650ms;
@@ -233,7 +233,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     white-space: nowrap;
   }
   .island__name span {
-    color: var(--color-blue-400);
+    color: var(--color-blue-200);
   }
 
   /* Collapsible link group: animates width via the 0fr ↔ 1fr grid trick */
