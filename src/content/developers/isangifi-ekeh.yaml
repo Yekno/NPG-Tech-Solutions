@@ -1,7 +1,7 @@
-# TODO: add skills, specialties, links and a photo when confirmed.
+# TODO: add specialties, links and a photo when confirmed.
 name: Isangifi Ekeh
 role: Backend Developer
-skills: []
+skills: [Node.js, Express, PostgreSQL, REST APIs]
 specialties: []
 bio: Backend developer at NPG Tech Solutions.
 order: 2
