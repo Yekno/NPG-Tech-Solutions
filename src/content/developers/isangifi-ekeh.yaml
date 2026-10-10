@@ -1,10 +1,7 @@
-# Name confirmed. TODO: confirm role, skills, specialties, bio and links (still placeholder values).
+# TODO: add skills, specialties, links and a photo when confirmed.
 name: Isangifi Ekeh
-role: UI/UX Designer
-skills: [Figma, Prototyping, CSS, Accessibility]
-specialties: [Design systems, User research]
-bio: Turns complex ideas into simple, accessible interfaces people enjoy using.
-links:
-  linkedin: https://www.linkedin.com/
-  portfolio: https://example.com/
+role: Backend Developer
+skills: []
+specialties: []
+bio: Backend developer at NPG Tech Solutions.
 order: 2

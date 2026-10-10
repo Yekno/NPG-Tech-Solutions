@@ -1,10 +1,7 @@
-# Name confirmed. TODO: confirm role, skills, specialties, bio and links (still placeholder values).
+# TODO: add skills, specialties, links and a photo when confirmed.
 name: Etuk Nyaknno J.
-role: Full-stack Developer
-skills: [TypeScript, Astro, React, Node.js, PostgreSQL]
-specialties: [Web applications, API design]
-bio: Builds fast, reliable web apps end to end, from database to interface.
-links:
-  github: https://github.com/
-  linkedin: https://www.linkedin.com/
+role: Front-end Developer / UI/UX Designer
+skills: []
+specialties: []
+bio: Front-end developer and UI/UX designer at NPG Tech Solutions.
 order: 1
