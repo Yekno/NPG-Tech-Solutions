@@ -41,7 +41,7 @@ const steps = [
 
 <BaseLayout>
   <!-- ============ HERO ============ -->
-  <section class="hero" aria-labelledby="hero-title">
+  <section class="hero" aria-labelledby="hero-title" data-island-label="Home">
     <div class="hero__bg" aria-hidden="true">
       <span class="hero__grid"></span>
       <span class="hero__blob hero__blob--1" data-parallax="0.25"></span>
@@ -55,11 +55,11 @@ const steps = [
           A community of developers · Remote, worldwide
         </p>
         <h1 id="hero-title" class="h-display" data-split>
-          Websites and digital solutions <span class="text-gradient">built to grow</span> your business.
+          Everything digital your business needs — <span class="text-gradient">designed, built and automated.</span>
         </h1>
         <p class="hero__lead" data-reveal="up" style="--reveal-delay:500">
-          {site.name} brings together skilled web developers and designers to plan, build and support websites,
-          online stores and apps — with the right people for every project.
+          {site.name} is your one-stop digital team for web design and development, UI/UX, graphic design, video
+          editing and business automation — delivered by specialists from our community.
         </p>
         <div class="hero__actions" data-reveal="up" style="--reveal-delay:650">
           <a href={ctaLinks.request.href} class="btn" data-magnetic>
@@ -338,7 +338,7 @@ const steps = [
     overflow: hidden;
     background: var(--color-navy);
     color: var(--color-white);
-    padding-block: clamp(3.5rem, 2rem + 6vw, 7rem) clamp(5rem, 3rem + 6vw, 8rem);
+    padding-block: calc(var(--island-space) + clamp(2rem, 1rem + 4vw, 4.5rem)) clamp(5rem, 3rem + 6vw, 8rem);
     --color-text: var(--color-white);
     --color-accent: var(--color-blue-200);
   }
@@ -435,7 +435,7 @@ const steps = [
     }
   }
   .hero h1 {
-    max-width: 16ch;
+    max-width: 18ch;
   }
   .hero__lead {
     font-size: var(--text-lg);

@@ -51,7 +51,8 @@
   --section-pad: clamp(4rem, 3rem + 5vw, 7.5rem);
   --container: 75rem;
   --gutter: clamp(1rem, 0.5rem + 2.5vw, 2rem);
-  --header-h: 4.5rem;
+  /* Room the floating navigation island needs above page content */
+  --island-space: 5.5rem;
 
   /* Shape & depth */
   --radius-sm: 0.5rem;
@@ -81,7 +82,7 @@
 }
 html {
   -webkit-text-size-adjust: 100%;
-  scroll-padding-top: calc(var(--header-h) + 1rem);
+  scroll-padding-top: var(--island-space);
 }
 @media (prefers-reduced-motion: no-preference) {
   html {

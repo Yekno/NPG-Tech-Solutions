@@ -106,20 +106,14 @@ function initReveals() {
   targets.forEach((el) => io.observe(el));
 }
 
-function initScrollEffects() {
-  const header = document.querySelector<HTMLElement>('[data-site-header]');
-  const progress = document.querySelector<HTMLElement>('[data-scroll-progress]');
-  const parallax = reduceMotion ? [] : Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
+function initParallax() {
+  if (reduceMotion) return;
+  const parallax = Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
+  if (!parallax.length) return;
   let ticking = false;
 
   const update = () => {
     ticking = false;
-    const y = window.scrollY;
-    header?.classList.toggle('is-scrolled', y > 12);
-    if (progress) {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      progress.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
-    }
     const vh = window.innerHeight;
     for (const el of parallax) {
       const rect = el.getBoundingClientRect();
@@ -181,5 +175,5 @@ function initPointerEffects() {
 }
 
 initReveals();
-initScrollEffects();
+initParallax();
 initPointerEffects();

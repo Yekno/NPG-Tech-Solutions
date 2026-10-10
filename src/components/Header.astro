@@ -1,289 +1,521 @@
 ---
+/*
+ * "Dynamic Island" navigation: a floating pill that morphs between states.
+ *   - expanded (default): brand, links and CTA
+ *   - compact (.is-compact): while scrolling down — links fold away, current section name shows
+ *     (desktop re-expands on hover / keyboard focus, and on scrolling up)
+ *   - open (.is-open, mobile): grows into a rounded panel holding the full menu
+ */
 import { Image } from 'astro:assets';
-import logo from '../assets/brand/logo-horizontal.png';
+import mark from '../assets/brand/icon-square.png';
 import { mainNav, ctaLinks, site } from '../data/site';
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
 ---
 
-<header class="site-header" data-site-header>
-  <div class="container site-header__inner">
-    <a href="/" class="site-header__logo" aria-label={`${site.name} — home`}>
-      <Image src={logo} alt="" width={240} densities={[1, 2]} loading="eager" fetchpriority="high" />
-    </a>
+<header class="island" data-island>
+  <div class="island__shell">
+    <div class="island__bar">
+      <a href="/" class="island__brand" aria-label={`${site.name} — home`}>
+        <Image src={mark} alt="" width={36} densities={[1, 2]} loading="eager" class="island__mark" />
+        <span class="island__name" aria-hidden="true">Tech <span>Solutions</span></span>
+      </a>
 
-    <nav class="site-nav" aria-label="Main">
-      <button
-        class="site-nav__toggle"
-        type="button"
-        aria-expanded="false"
-        aria-controls="site-menu"
-        data-menu-toggle
-      >
+      <div class="island__collapse">
+        <nav class="island__nav" aria-label="Main">
+          <ul role="list">
+            {
+              mainNav.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+
+      <div class="island__activity" aria-hidden="true">
+        <span class="island__label" data-island-label></span>
+      </div>
+
+      <a href={ctaLinks.request.href} class="btn island__cta">
+        {ctaLinks.request.label} <span class="btn__arrow" aria-hidden="true">→</span>
+      </a>
+
+      <button class="island__toggle" type="button" aria-expanded="false" aria-controls="island-menu" data-island-toggle>
         <span class="visually-hidden">Menu</span>
-        <span class="burger" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="burger" aria-hidden="true"><span></span><span></span></span>
       </button>
+    </div>
 
-      <div class="site-nav__menu" id="site-menu" data-menu>
-        <ul role="list" class="site-nav__list">
-          {
-            mainNav.map((item, i) => (
-              <li style={`--i:${i}`}>
-                <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
-                  {item.label}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-        <div class="site-nav__ctas">
-          <a href={ctaLinks.join.href} class="site-nav__join">{ctaLinks.join.label}</a>
-          <a href={ctaLinks.request.href} class="btn" data-magnetic>
+    <div class="island__panel" id="island-menu" data-island-panel>
+      <div class="island__panel-inner">
+        <nav aria-label="Main (mobile)">
+          <ul role="list" class="island__panel-list">
+            {
+              mainNav.map((item, i) => (
+                <li style={`--i:${i}`}>
+                  <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <div class="island__panel-ctas">
+          <a href={ctaLinks.request.href} class="btn">
             {ctaLinks.request.label} <span class="btn__arrow" aria-hidden="true">→</span>
           </a>
+          <a href={ctaLinks.join.href} class="island__join">{ctaLinks.join.label}</a>
         </div>
       </div>
-    </nav>
+    </div>
   </div>
-  <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
 </header>
+<div class="island-scrim" data-island-scrim aria-hidden="true"></div>
 
 <script>
-  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
-  const menu = document.querySelector<HTMLElement>('[data-menu]');
-  if (toggle && menu) {
+  const island = document.querySelector<HTMLElement>('[data-island]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-island-toggle]');
+  const panel = document.querySelector<HTMLElement>('[data-island-panel]');
+  const scrim = document.querySelector<HTMLElement>('[data-island-scrim]');
+  const label = document.querySelector<HTMLElement>('[data-island-label]');
+
+  if (island && toggle && panel) {
+    // ----- open / close (mobile) -----
     const setOpen = (open: boolean) => {
       toggle.setAttribute('aria-expanded', String(open));
-      document.documentElement.classList.toggle('menu-open', open);
+      island.classList.toggle('is-open', open);
+      document.documentElement.classList.toggle('island-open', open);
+      panel.inert = !open;
     };
+    panel.inert = true;
     toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    scrim?.addEventListener('click', () => setOpen(false));
+    panel.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) setOpen(false);
+    });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+      if (e.key === 'Escape' && island.classList.contains('is-open')) {
         setOpen(false);
         toggle.focus();
       }
     });
-    menu.addEventListener('click', (e) => {
-      if ((e.target as HTMLElement).closest('a')) setOpen(false);
-    });
-    window.matchMedia('(min-width: 72rem)').addEventListener('change', () => setOpen(false));
+    window.matchMedia('(min-width: 60rem)').addEventListener('change', () => setOpen(false));
+
+    // ----- compact on scroll down, expand on scroll up; current section name -----
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('main section'));
+    const sectionName = (s: HTMLElement) =>
+      s.dataset.islandLabel ?? s.querySelector('.eyebrow')?.textContent?.trim() ?? '';
+    let lastY = window.scrollY;
+    let currentLabel = '';
+    let ticking = false;
+
+    const update = () => {
+      ticking = false;
+      const y = window.scrollY;
+      const delta = y - lastY;
+      if (Math.abs(delta) > 6) {
+        island.classList.toggle('is-compact', y > 160 && delta > 0);
+        lastY = y;
+      }
+      if (y <= 160) island.classList.remove('is-compact');
+
+      const probe = window.innerHeight * 0.35;
+      let name = '';
+      for (const s of sections) {
+        if (s.getBoundingClientRect().top <= probe) {
+          const n = sectionName(s);
+          if (n) name = n;
+        }
+      }
+      if (label && name !== currentLabel) {
+        currentLabel = name;
+        label.classList.remove('is-swapping');
+        void label.offsetWidth; // restart the swap animation
+        label.textContent = name;
+        label.classList.add('is-swapping');
+      }
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    update();
   }
 </script>
 
 <style>
-  .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: rgb(255 255 255 / 0.85);
-    backdrop-filter: saturate(1.6) blur(14px);
-    -webkit-backdrop-filter: saturate(1.6) blur(14px);
-    border-bottom: 1px solid transparent;
+  /* Spring easing gives the island its "bouncy" morph */
+  .island {
+    /* See-through glass. At 40% navy, white text over white page sections drops below
+       ideal contrast, so a soft text shadow helps keep the links legible. */
+    --island-bg: rgb(5 11 31 / 0.4);
+    --island-bg-solid: rgb(5 11 31 / 0.94);
+    --spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+    --morph: 650ms;
+    position: fixed;
+    top: 0.75rem;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    display: flex;
+    justify-content: center;
+    padding-inline: 0.75rem;
+    pointer-events: none;
+  }
+  .island__shell {
+    pointer-events: auto;
+    width: min(100%, 28rem);
+    border-radius: 2rem;
+    background: var(--island-bg);
+    -webkit-backdrop-filter: blur(6px) saturate(1.4);
+    backdrop-filter: blur(4px) saturate(1.4);
+    color: var(--color-white);
+    text-shadow: 0 1px 3px rgb(1 12 46 / 0.6);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.08),
+      0 18px 40px -12px rgb(1 12 46 / 0.55);
+    overflow: hidden;
     transition:
-      box-shadow var(--dur) var(--ease-out),
-      border-color var(--dur) var(--ease-out);
+      width var(--morph) var(--spring),
+      border-radius var(--morph) var(--spring),
+      background var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out);
   }
-  .site-header:global(.is-scrolled) {
-    border-color: var(--color-line);
-    box-shadow: var(--shadow-sm);
-  }
-  .site-header__inner {
+
+  /* ---------- Bar ---------- */
+  .island__bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-6);
-    min-height: var(--header-h);
+    gap: var(--space-2);
+    min-height: 3.25rem;
+    padding: 0.375rem 0.375rem 0.375rem 0.5rem;
   }
-  .site-header__logo {
-    display: block;
+  .island__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
     flex-shrink: 0;
-    border-radius: var(--radius-sm);
+    color: inherit;
+    text-decoration: none;
+    border-radius: var(--radius-pill);
   }
-  .site-header__logo img {
-    width: clamp(10rem, 8rem + 6vw, 13.5rem);
-    height: auto;
+  .island__mark {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.625rem;
+    transition: transform var(--morph) var(--spring);
+  }
+  .island__brand:hover .island__mark {
+    transform: rotate(-8deg) scale(1.06);
+  }
+  /* Mirrors the logo's wordmark: spaced capitals, "Solutions" in brand blue */
+  .island__name {
+    font-weight: 800;
+    font-size: var(--text-sm);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .island__name span {
+    color: var(--color-blue-400);
   }
 
-  .scroll-progress {
-    position: absolute;
-    left: 0;
-    bottom: -1px;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg, var(--color-blue), var(--color-blue-400));
-    transform: scaleX(0);
-    transform-origin: left;
+  /* Collapsible link group: animates width via the 0fr ↔ 1fr grid trick */
+  .island__collapse {
+    display: none;
+  }
+  .island__nav ul {
+    display: flex;
+    gap: 0.125rem;
+  }
+  .island__nav a {
+    display: block;
+    padding: 0.5rem 0.8rem;
+    border-radius: var(--radius-pill);
+    color: #c9d3ee;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background var(--dur-fast),
+      color var(--dur-fast);
+  }
+  .island__nav a:hover {
+    background: rgb(255 255 255 / 0.08);
+    color: var(--color-white);
+  }
+  .island__nav a[aria-current='page'] {
+    background: rgb(255 255 255 / 0.12);
+    color: var(--color-white);
   }
 
-  /* Mobile-first: off-canvas menu */
-  .site-nav__toggle {
-    position: relative;
-    z-index: 2;
+  /* Live activity: name of the section currently in view */
+  .island__activity {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    flex: 1;
+    min-width: 0;
+    padding-right: var(--space-1);
+  }
+  .island__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-blue-200);
+  }
+  .island__label:global(.is-swapping) {
+    animation: label-in 450ms var(--spring);
+  }
+  @keyframes label-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+      filter: blur(4px);
+    }
+  }
+
+  .island__cta {
+    display: none;
+  }
+
+  /* ---------- Toggle (mobile) ---------- */
+  .island__toggle {
     display: grid;
     place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border: 1px solid var(--color-line);
-    border-radius: var(--radius-pill);
-    background: var(--color-white);
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.1);
+    color: var(--color-white);
+    transition: background var(--dur-fast);
+  }
+  .island__toggle:hover {
+    background: rgb(255 255 255 / 0.18);
   }
   .burger {
     display: grid;
     gap: 5px;
-    width: 1.25rem;
+    width: 1.1rem;
   }
   .burger span {
     display: block;
     height: 2px;
-    background: var(--color-navy);
     border-radius: 2px;
-    transition:
-      transform var(--dur) var(--ease-out),
-      opacity var(--dur-fast);
+    background: currentColor;
+    transition: transform var(--morph) var(--spring);
   }
-  :global(.menu-open) .burger span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
+  .island:global(.is-open) .burger span:nth-child(1) {
+    transform: translateY(3.5px) rotate(45deg);
   }
-  :global(.menu-open) .burger span:nth-child(2) {
-    opacity: 0;
-  }
-  :global(.menu-open) .burger span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
+  .island:global(.is-open) .burger span:nth-child(2) {
+    transform: translateY(-3.5px) rotate(-45deg);
   }
 
-  .site-nav__menu {
-    position: fixed;
-    inset: var(--header-h) 0 auto 0;
-    height: calc(100dvh - var(--header-h));
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: var(--space-8);
-    padding: var(--space-8) var(--gutter);
-    background: var(--color-white);
-    overflow-y: auto;
-    visibility: hidden;
-    opacity: 0;
-    transform: translateY(-12px);
-    transition:
-      opacity var(--dur) var(--ease-out),
-      transform var(--dur) var(--ease-out),
-      visibility 0s linear var(--dur);
+  /* ---------- Panel (mobile open state) ---------- */
+  .island__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--morph) var(--spring);
   }
-  :global(.menu-open) .site-nav__menu {
-    visibility: visible;
-    opacity: 1;
-    transform: none;
-    transition-delay: 0s;
-  }
-  :global(.menu-open) body {
+  .island__panel-inner {
+    min-height: 0;
     overflow: hidden;
   }
-  .site-nav__list {
+  /* The open menu goes nearly solid so the large links stay easy to read */
+  .island:global(.is-open) .island__shell {
+    background: var(--island-bg-solid);
+    width: min(100%, 30rem);
+    border-radius: 1.75rem;
+  }
+  .island:global(.is-open) .island__panel {
+    grid-template-rows: 1fr;
+  }
+  .island__panel-list {
     display: grid;
-    gap: var(--space-2);
+    gap: 0.125rem;
+    padding: var(--space-4) var(--space-4) 0;
   }
-  .site-nav__list a {
+  .island__panel-list a {
     display: block;
-    padding: var(--space-2) 0;
-    font-size: var(--text-2xl);
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--radius);
+    color: var(--color-white);
+    font-size: var(--text-xl);
     font-weight: 800;
-    color: var(--color-navy);
-    text-decoration: none;
     letter-spacing: -0.02em;
+    text-decoration: none;
   }
-  .site-nav__list a[aria-current='page'] {
-    color: var(--color-blue);
+  .island__panel-list a:hover,
+  .island__panel-list a[aria-current='page'] {
+    background: rgb(255 255 255 / 0.08);
+  }
+  .island__panel-list a[aria-current='page'] {
+    color: var(--color-blue-200);
   }
   @media (prefers-reduced-motion: no-preference) {
-    .site-nav__list li {
+    .island__panel-list li {
       opacity: 0;
-      transform: translateY(16px);
+      transform: translateY(-8px) scale(0.98);
       transition:
-        opacity var(--dur) var(--ease-out),
-        transform var(--dur) var(--ease-out);
+        opacity 300ms var(--ease-out),
+        transform 450ms var(--spring);
     }
-    :global(.menu-open) .site-nav__list li {
+    .island:global(.is-open) .island__panel-list li {
       opacity: 1;
       transform: none;
-      transition-delay: calc(var(--i) * 60ms + 100ms);
+      transition-delay: calc(var(--i) * 45ms + 120ms);
     }
   }
-  .site-nav__ctas {
+  .island__panel-ctas {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-3);
+    justify-items: center;
+    padding: var(--space-6) var(--space-4) var(--space-6);
   }
-  .site-nav__join {
+  .island__panel-ctas .btn {
+    width: 100%;
+  }
+  .island__join {
+    color: var(--color-blue-200);
     font-weight: 700;
-    color: var(--color-navy);
+    font-size: var(--text-sm);
   }
 
-  @media (min-width: 72rem) {
-    .site-nav__toggle {
+  /* Buttons on the dark island: sweep to white */
+  .island .btn::before {
+    background: var(--color-white);
+  }
+  .island .btn:hover {
+    color: var(--color-navy);
+    border-color: var(--color-white);
+  }
+
+  .island-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgb(1 12 46 / 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--dur) var(--ease-out),
+      visibility 0s linear var(--dur);
+  }
+  :global(.island-open) .island-scrim {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+  :global(.island-open) body {
+    overflow: hidden;
+  }
+
+  /* On mobile the brand name always shows, so the section label is left out */
+  .island__label {
+    display: none;
+  }
+
+  /* ---------- Desktop ---------- */
+  @media (min-width: 60rem) {
+    .island {
+      top: 1rem;
+    }
+    .island__shell {
+      width: auto;
+      border-radius: var(--radius-pill);
+    }
+    .island__bar {
+      gap: var(--space-1);
+      padding-left: 0.375rem;
+      min-width: 32rem;
+    }
+    .island__toggle,
+    .island__panel {
       display: none;
     }
-    .site-nav {
-      flex: 1;
+    .island__name {
+      margin-right: var(--space-3);
     }
-    .site-nav__menu {
-      position: static;
-      height: auto;
-      flex-direction: row;
+    .island__collapse {
+      display: grid;
+      grid-template-columns: 1fr;
+      transition: grid-template-columns var(--morph) var(--spring);
+    }
+    .island__nav {
+      min-width: 0;
+      overflow: hidden;
+      padding-inline: var(--space-2);
+      transition:
+        opacity var(--dur) var(--ease-out),
+        filter var(--dur) var(--ease-out);
+    }
+    .island__activity {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-columns: 0fr;
       align-items: center;
-      justify-content: space-between;
+      gap: 0;
+      flex: none;
+      margin-left: auto;
       padding: 0;
-      background: none;
-      overflow: visible;
-      visibility: visible;
-      opacity: 1;
-      transform: none;
-      transition: none;
+      overflow: hidden;
+      transition:
+        grid-template-columns var(--morph) var(--spring),
+        padding var(--morph) var(--spring);
     }
-    .site-nav__list {
-      display: flex;
-      gap: var(--space-1);
-      margin-inline: auto;
+    .island__activity > * {
+      min-width: 0;
     }
-    .site-nav__list li {
-      opacity: 1 !important;
-      transform: none !important;
+    .island__label {
+      display: block;
     }
-    .site-nav__list a {
-      position: relative;
-      padding: var(--space-2) var(--space-3);
-      font-size: var(--text-sm);
-      font-weight: 600;
-      letter-spacing: 0;
+    .island__cta {
+      display: inline-flex;
+      flex-shrink: 0;
+      min-height: 2.5rem;
+      padding: 0.45rem 1.1rem;
     }
-    .site-nav__list a::after {
-      content: '';
-      position: absolute;
-      left: var(--space-3);
-      right: var(--space-3);
-      bottom: 2px;
-      height: 2px;
-      background: var(--color-blue);
-      transform: scaleX(0);
-      transform-origin: right;
-      transition: transform var(--dur) var(--ease-out);
+
+    /* Compact: links fold away and the "live activity" slides in */
+    .island:global(.is-compact):not(:hover):not(:focus-within) .island__collapse {
+      grid-template-columns: 0fr;
     }
-    .site-nav__list a:hover::after,
-    .site-nav__list a[aria-current='page']::after {
-      transform: scaleX(1);
-      transform-origin: left;
+    .island:global(.is-compact):not(:hover):not(:focus-within) .island__nav {
+      opacity: 0;
+      filter: blur(6px);
     }
-    .site-nav__ctas {
-      display: flex;
-      align-items: center;
-      gap: var(--space-6);
+    .island:global(.is-compact):not(:hover):not(:focus-within) .island__activity {
+      grid-template-columns: 1fr;
+      padding-inline: var(--space-3) var(--space-2);
     }
-    .site-nav__join {
-      font-size: var(--text-sm);
-      text-decoration: none;
-    }
-    .site-nav__join:hover {
-      text-decoration: underline;
+    .island:global(.is-compact):not(:hover):not(:focus-within) .island__shell {
+      box-shadow:
+        0 0 0 1px rgb(255 255 255 / 0.1),
+        0 12px 30px -10px rgb(1 12 46 / 0.6);
     }
   }
 </style>
