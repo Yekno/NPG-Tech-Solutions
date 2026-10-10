@@ -52,14 +52,16 @@ const year = new Date().getFullYear();
   .site-footer {
     position: relative;
     overflow: hidden;
-    background: var(--color-navy-900);
+    /* Long fade in from the page background, matching the section transitions */
+    background: linear-gradient(to bottom, var(--color-bg), var(--color-navy-900) var(--fade));
+    background: linear-gradient(in oklab to bottom, var(--color-bg), var(--color-navy-900) var(--fade));
     color: #c9d3ee;
-    padding-top: var(--section-pad);
+    padding-top: calc(var(--fade) + 1rem);
     --color-accent: var(--color-blue-200);
   }
   .site-footer__glow {
     position: absolute;
-    top: -30%;
+    top: calc(var(--fade) - 12rem);
     left: 50%;
     width: 60rem;
     height: 40rem;

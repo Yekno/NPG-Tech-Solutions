@@ -54,6 +54,8 @@
   --space-12: 3rem;
   --space-16: 4rem;
   --section-pad: clamp(4rem, 3rem + 5vw, 7.5rem);
+  /* Height of the long gradient fade between sections of different colours */
+  --fade: clamp(9rem, 6rem + 10vw, 16rem);
   --container: 75rem;
   --gutter: clamp(1rem, 0.5rem + 2.5vw, 2rem);
   /* Room the floating navigation island needs above page content */
@@ -214,11 +216,52 @@ ol[role='list'] {
   padding-block: var(--section-pad);
   position: relative;
 }
+/*
+ * Coloured sections fade in from the page background and back out again, so there is
+ * never a hard line between sections. Mixing in OKLab keeps the white↔navy blend clean
+ * instead of passing through a muddy grey.
+ */
 .section--surface {
-  background: var(--color-surface);
+  background: linear-gradient(
+    to bottom,
+    var(--color-bg),
+    var(--color-surface) var(--fade),
+    var(--color-surface) calc(100% - var(--fade)),
+    var(--color-bg)
+  );
 }
 .section--dark {
-  background: var(--color-navy);
+  /* Extra padding keeps the light text clear of the light end of the fade */
+  padding-block: calc(var(--fade) + 1rem);
+  background: linear-gradient(
+    to bottom,
+    var(--color-bg),
+    var(--color-navy) var(--fade),
+    var(--color-navy) calc(100% - var(--fade)),
+    var(--color-bg)
+  );
+}
+@supports (background: linear-gradient(in oklab, red, blue)) {
+  .section--surface {
+    background: linear-gradient(
+      in oklab to bottom,
+      var(--color-bg),
+      var(--color-surface) var(--fade),
+      var(--color-surface) calc(100% - var(--fade)),
+      var(--color-bg)
+    );
+  }
+  .section--dark {
+    background: linear-gradient(
+      in oklab to bottom,
+      var(--color-bg),
+      var(--color-navy) var(--fade),
+      var(--color-navy) calc(100% - var(--fade)),
+      var(--color-bg)
+    );
+  }
+}
+.section--dark {
   color: var(--color-white);
   --color-text: var(--color-white);
   --color-heading: var(--color-white);
