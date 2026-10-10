@@ -4,6 +4,6 @@ client: Placeholder Studio
 type: Web application
 summary: A booking and scheduling app with reminders and an admin dashboard.
 tech: [React, Node.js, PostgreSQL]
-developers: [alex-placeholder]
+developers: [etuk-nyaknno]
 featured: true
 order: 3
