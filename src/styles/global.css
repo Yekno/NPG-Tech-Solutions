@@ -20,13 +20,18 @@
   --color-line: #dde3f0;
   --color-surface: #f5f7fc;
 
-  /* Semantic */
+  /* Semantic — components use these so light/dark themes only redefine this block */
   --color-text: var(--color-ink);
+  --color-heading: var(--color-navy);
   --color-bg: var(--color-white);
+  --color-card: var(--color-white);
+  --color-chip-bg: var(--color-blue-50);
+  --color-chip-fg: var(--color-navy);
   --color-accent: var(--color-blue);
   --color-focus: #ffb020;
   --color-error: #c62828;
   --color-success: #1b7f4b;
+  color-scheme: light;
 
   /* Typography — neutral system stacks until brand fonts are chosen */
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -69,6 +74,33 @@
   --dur-fast: 180ms;
   --dur: 400ms;
   --dur-slow: 900ms;
+}
+
+/* ---------- Dark theme ----------
+   Set on <html data-theme="dark"> by the inline script in BaseLayout (saved choice,
+   falling back to the device setting) and switched by ThemeToggle. */
+:root[data-theme='dark'] {
+  --color-text: #dfe6f8;
+  --color-heading: #ffffff;
+  --color-bg: #040a1c;
+  --color-surface: #08112b;
+  --color-card: #0c1838;
+  --color-muted: #9fb0d8;
+  --color-line: rgb(255 255 255 / 0.1);
+  --color-chip-bg: rgb(6 85 225 / 0.22);
+  --color-chip-fg: #cfe0ff;
+  --color-accent: #6f9cff;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 8px rgb(0 0 0 / 0.25);
+  --shadow: 0 10px 30px -10px rgb(0 0 0 / 0.6);
+  --shadow-lg: 0 30px 60px -20px rgb(0 0 0 / 0.7);
+  color-scheme: dark;
+}
+
+/* Circular reveal when switching theme (View Transitions; animated from ThemeToggle) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 /* ---------- Reset ---------- */
@@ -189,6 +221,7 @@ ol[role='list'] {
   background: var(--color-navy);
   color: var(--color-white);
   --color-text: var(--color-white);
+  --color-heading: var(--color-white);
   --color-muted: #b9c5e6;
   --color-line: rgb(255 255 255 / 0.12);
   --color-accent: var(--color-blue-200);
@@ -350,8 +383,8 @@ ol[role='list'] {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: var(--radius-pill);
-  background: var(--color-blue-50);
-  color: var(--color-navy);
+  background: var(--color-chip-bg);
+  color: var(--color-chip-fg);
   font-size: var(--text-xs);
   font-weight: 600;
 }

@@ -35,8 +35,24 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL('/icon-512.png', Astro.site)} />
 
-    <!-- Mark JS as available before first paint so scroll-reveal content never flashes. -->
-    <script is:inline>document.documentElement.classList.add('js');</script>
+    <!--
+      Runs before first paint: marks JS as available (so scroll-reveal content never flashes)
+      and applies the saved theme, falling back to the device's light/dark setting.
+    -->
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        var theme = null;
+        try {
+          theme = localStorage.getItem('theme');
+        } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        root.dataset.theme = theme;
+      })();
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

@@ -338,6 +338,7 @@ const steps = [
     overflow: hidden;
     background: var(--color-navy);
     color: var(--color-white);
+    --color-heading: var(--color-white);
     padding-block: calc(var(--island-space) + clamp(2rem, 1rem + 4vw, 4.5rem)) clamp(5rem, 3rem + 6vw, 8rem);
     --color-text: var(--color-white);
     --color-accent: var(--color-blue-200);
@@ -627,7 +628,7 @@ const steps = [
   .stat__value {
     font-size: var(--text-2xl);
     font-weight: 800;
-    color: var(--color-navy);
+    color: var(--color-heading);
     font-variant-numeric: tabular-nums;
   }
   .stat__label {
@@ -657,8 +658,8 @@ const steps = [
     border-radius: var(--radius-lg);
     background:
       radial-gradient(320px circle at var(--mx) var(--my), rgb(6 85 225 / 0.1), transparent 70%),
-      var(--color-white);
-    color: var(--color-ink);
+      var(--color-card);
+    color: var(--color-text);
     text-decoration: none;
     overflow: hidden;
     transition:
@@ -689,11 +690,11 @@ const steps = [
   .service__num {
     font-family: var(--font-mono);
     font-weight: 700;
-    color: var(--color-blue);
+    color: var(--color-accent);
   }
   .service__title {
     font-size: var(--text-xl);
-    color: var(--color-navy);
+    color: var(--color-heading);
   }
   .service p {
     color: var(--color-muted);
@@ -707,8 +708,8 @@ const steps = [
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 50%;
-    background: var(--color-blue-50);
-    color: var(--color-blue);
+    background: var(--color-chip-bg);
+    color: var(--color-accent);
     font-weight: 700;
     transition:
       transform var(--dur) var(--ease-out),
@@ -817,8 +818,8 @@ const steps = [
     height: 3rem;
     border: 1px solid var(--color-line);
     border-radius: 50%;
-    background: var(--color-white);
-    color: var(--color-navy);
+    background: var(--color-card);
+    color: var(--color-heading);
     font-size: var(--text-lg);
     transition:
       background var(--dur-fast),
@@ -826,8 +827,8 @@ const steps = [
       transform var(--dur-fast);
   }
   .carousel-btn:hover:not(:disabled) {
-    background: var(--color-navy);
-    color: var(--color-white);
+    background: var(--color-heading);
+    color: var(--color-bg);
   }
   .carousel-btn:active:not(:disabled) {
     transform: scale(0.94);
@@ -865,18 +866,18 @@ const steps = [
     padding: var(--space-8);
     border: 1px solid var(--color-line);
     border-radius: var(--radius-lg);
-    background: var(--color-white);
+    background: var(--color-card);
     box-shadow: var(--shadow-sm);
   }
   .quote__mark {
     font-size: 4rem;
     line-height: 0.6;
     font-weight: 800;
-    color: var(--color-blue);
+    color: var(--color-accent);
     font-family: Georgia, serif;
   }
   .quote blockquote {
-    color: var(--color-ink);
+    color: var(--color-text);
   }
   .quote figcaption {
     display: grid;
@@ -884,7 +885,7 @@ const steps = [
     color: var(--color-muted);
   }
   .quote figcaption strong {
-    color: var(--color-navy);
+    color: var(--color-heading);
   }
 
   /* ---------- Join band ---------- */
@@ -903,7 +904,9 @@ const steps = [
       radial-gradient(500px circle at var(--mx) var(--my), rgb(6 85 225 / 0.55), transparent 70%),
       linear-gradient(135deg, var(--color-navy), var(--color-navy-900));
     color: var(--color-white);
+    --color-heading: var(--color-white);
     --color-muted: #c9d3ee;
+    border: 1px solid var(--color-line);
     --color-accent: var(--color-blue-200);
   }
   .join__card > div {

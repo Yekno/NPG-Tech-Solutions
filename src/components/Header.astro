@@ -7,6 +7,7 @@
  *   - open (.is-open, mobile): grows into a rounded panel holding the full menu
  */
 import { Image } from 'astro:assets';
+import ThemeToggle from './ThemeToggle.astro';
 import mark from '../assets/brand/icon-square.png';
 import { mainNav, ctaLinks, site } from '../data/site';
 
@@ -41,6 +42,8 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
       <div class="island__activity" aria-hidden="true">
         <span class="island__label" data-island-label></span>
       </div>
+
+      <ThemeToggle />
 
       <a href={ctaLinks.request.href} class="btn island__cta">
         {ctaLinks.request.label} <span class="btn__arrow" aria-hidden="true">→</span>
