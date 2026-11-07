@@ -19,6 +19,7 @@ const developers = defineCollection({
       name: z.string(),
       photo: image().optional(),
       role: z.string(),
+      department: z.string().optional(),
       skills: z.array(z.string()).default([]),
       specialties: z.array(z.string()).default([]),
       bio: z.string(),
@@ -73,4 +74,17 @@ const testimonials = defineCollection({
   }),
 });
 
-export const collections = { developers, projects, services, testimonials };
+const roles = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/roles' }),
+  schema: z.object({
+    title: z.string(),
+    type: z.enum(['full-time', 'part-time', 'contract', 'internship']),
+    location: z.string(),
+    summary: z.string(),
+    responsibilities: z.array(z.string()).default([]),
+    requirements: z.array(z.string()).default([]),
+    open: z.boolean().default(true),
+  }),
+});
+
+export const collections = { developers, projects, services, testimonials, roles };

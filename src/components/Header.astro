@@ -74,7 +74,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
           <a href={ctaLinks.request.href} class="btn">
             {ctaLinks.request.label} <span class="btn__arrow" aria-hidden="true">→</span>
           </a>
-          <a href={ctaLinks.join.href} class="island__join">{ctaLinks.join.label}</a>
+          <a href={ctaLinks.careers.href} class="island__careers">{ctaLinks.careers.label}</a>
         </div>
       </div>
     </div>
@@ -407,7 +407,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   .island__panel-ctas .btn {
     width: 100%;
   }
-  .island__join {
+  .island__careers {
     color: var(--color-blue-200);
     font-weight: 700;
     font-size: var(--text-sm);

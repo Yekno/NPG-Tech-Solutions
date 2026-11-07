@@ -3,21 +3,21 @@ export const site = {
   name: 'NPG Tech Solutions',
   tagline: 'Digital Solutions • IT Support • Digital Skills',
   description:
-    'NPG Tech Solutions is a community of web developers and designers building fast, modern websites, apps and online stores for businesses.',
+    'NPG Tech Solutions is a digital solutions company delivering web development, UI/UX, e-commerce, IT support and digital skills training for businesses.',
   location: 'Remote — working with clients worldwide',
 };
 
 export const mainNav = [
   { label: 'Services', href: '/services' },
   { label: 'Portfolio', href: '/portfolio' },
-  { label: 'Developers', href: '/developers' },
+  { label: 'Team', href: '/team' },
   { label: 'About', href: '/about' },
   { label: 'Testimonials', href: '/testimonials' },
 ];
 
 export const ctaLinks = {
   request: { label: 'Request a project', href: '/request-a-project' },
-  join: { label: 'Join the community', href: '/join' },
+  careers: { label: 'Join our team', href: '/careers' },
 };
 
 export const footerNav = [
@@ -31,11 +31,11 @@ export const footerNav = [
     ],
   },
   {
-    heading: 'Community',
+    heading: 'Company',
     links: [
-      { label: 'Our developers', href: '/developers' },
+      { label: 'Our team', href: '/team' },
       { label: 'About us', href: '/about' },
-      { label: 'Join the community', href: '/join' },
+      { label: 'Careers', href: '/careers' },
       { label: 'Request a project', href: '/request-a-project' },
     ],
   },

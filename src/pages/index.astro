@@ -34,7 +34,7 @@ const stats = [
 const steps = [
   { title: 'Discover', text: 'We learn about your business, your users and what success looks like.' },
   { title: 'Design', text: 'Wireframes and visual designs you can click through before we build.' },
-  { title: 'Build', text: 'The right developers from our community build it, with regular check-ins.' },
+  { title: 'Build', text: 'The right specialists on our team build it, with regular check-ins.' },
   { title: 'Launch & support', text: 'We launch, measure and keep improving — and we stay on call.' },
 ];
 ---
@@ -47,9 +47,9 @@ const steps = [
     </div>
 
     <div class="container hero__copy">
-      <a href="/developers" class="hero__badge" data-reveal="down">
+      <a href="/about" class="hero__badge" data-reveal="down">
         <span class="hero__pulse" aria-hidden="true"></span>
-        A community of developers<span class="hero__badge-extra">&nbsp;· Remote, worldwide</span>
+        A digital solutions company<span class="hero__badge-extra">&nbsp;· Remote, worldwide</span>
         <span class="hero__badge-arrow" aria-hidden="true">›</span>
       </a>
       <h1 id="hero-title" class="h-display" data-split>
@@ -57,7 +57,7 @@ const steps = [
       </h1>
       <p class="hero__lead" data-reveal="up" style="--reveal-delay:500">
         {site.name} is your one-stop digital team for web design and development, UI/UX, graphic design, video
-        editing and business automation — delivered by specialists from our community.
+        editing and business automation — delivered by our team of specialists.
       </p>
       <div class="hero__actions" data-reveal="up" style="--reveal-delay:650">
         <a href={ctaLinks.request.href} class="btn" data-magnetic>
@@ -122,14 +122,14 @@ const steps = [
     <div class="container intro">
       <div class="intro__media" data-reveal="mask">
         <div data-parallax="0.08">
-          <Media src={homeImage('about')} alt="The NPG Tech Solutions team at work" label="Our community" ratio="5 / 6" sizes="(min-width: 64rem) 45vw, 100vw" />
+          <Media src={homeImage('about')} alt="The NPG Tech Solutions team at work" label="Our team" ratio="5 / 6" sizes="(min-width: 64rem) 45vw, 100vw" />
         </div>
       </div>
       <div class="intro__copy">
         <p class="eyebrow" data-reveal="up">Who we are</p>
-        <h2 id="intro-title" class="h-section" data-split>Your digital partner, powered by a community of experts.</h2>
+        <h2 id="intro-title" class="h-section" data-split>Your digital partner, powered by a team of experts.</h2>
         <p class="lead" data-reveal="up">
-          We're a collaborative community of web developers, designers and IT specialists. Instead of one-size-fits-all,
+          We're a digital solutions company of web developers, designers and IT specialists. Instead of one-size-fits-all,
           we match every project with the people whose skills fit it best — so you get specialist quality with a single
           point of contact.
         </p>
@@ -146,7 +146,7 @@ const steps = [
             ))
           }
         </ul>
-        <a href="/about" class="link-arrow" data-reveal="up">More about the community <span aria-hidden="true">→</span></a>
+        <a href="/about" class="link-arrow" data-reveal="up">More about us <span aria-hidden="true">→</span></a>
       </div>
     </div>
   </section>
@@ -238,17 +238,17 @@ const steps = [
     )
   }
 
-  <!-- ============ DEVELOPERS ============ -->
+  <!-- ============ TEAM ============ -->
   <section class="section section--surface" aria-labelledby="devs-title">
     <div class="container">
       <div class="section-head section-head--split">
         <div>
-          <p class="eyebrow" data-reveal="up">Our developers</p>
+          <p class="eyebrow" data-reveal="up">Our team</p>
           <h2 id="devs-title" class="h-section" data-split>Meet some of the people behind the work.</h2>
         </div>
-        <a href="/developers" class="btn btn--ghost" data-reveal="up">Meet everyone</a>
+        <a href="/team" class="btn btn--ghost" data-reveal="up">Meet everyone</a>
       </div>
-      <ul role="list" class="devs" data-stagger="120" tabindex="0" aria-label="Our developers">
+      <ul role="list" class="devs" data-stagger="120" tabindex="0" aria-label="Our team">
         {
           developers.slice(0, 4).map((d) => (
             <li data-reveal="zoom">
@@ -299,17 +299,17 @@ const steps = [
     )
   }
 
-  <!-- ============ JOIN BAND ============ -->
-  <section class="section join" aria-labelledby="join-title">
+  <!-- ============ CAREERS BAND ============ -->
+  <section class="section careers" aria-labelledby="careers-title">
     <div class="container">
-      <div class="join__card" data-reveal="zoom" data-spotlight>
+      <div class="careers__card" data-reveal="zoom" data-spotlight>
         <div>
-          <p class="eyebrow">For developers</p>
-          <h2 id="join-title" class="h-section">Build great things with people who care about the craft.</h2>
-          <p class="lead">Join a community of developers and designers working on real client projects together.</p>
+          <p class="eyebrow">Careers</p>
+          <h2 id="careers-title" class="h-section">Build your career at NPG Tech Solutions.</h2>
+          <p class="lead">Work on real client projects alongside a skilled, supportive team.</p>
         </div>
-        <a href={ctaLinks.join.href} class="btn" data-magnetic>
-          {ctaLinks.join.label} <span class="btn__arrow" aria-hidden="true">→</span>
+        <a href={ctaLinks.careers.href} class="btn" data-magnetic>
+          {ctaLinks.careers.label} <span class="btn__arrow" aria-hidden="true">→</span>
         </a>
       </div>
     </div>
@@ -959,7 +959,7 @@ const steps = [
     margin-top: var(--space-4);
   }
 
-  /* ---------- Developers ---------- */
+  /* ---------- Team ---------- */
   /* Phones: a swipeable row (like the portfolio carousel) to keep the page short.
      Wider screens: a regular grid. */
   .devs {
@@ -1031,11 +1031,11 @@ const steps = [
     color: var(--color-heading);
   }
 
-  /* ---------- Join band ---------- */
-  .join {
+  /* ---------- Careers band ---------- */
+  .careers {
     padding-top: 0;
   }
-  .join__card {
+  .careers__card {
     --mx: 80%;
     --my: 20%;
     display: grid;
@@ -1052,19 +1052,19 @@ const steps = [
     border: 1px solid var(--color-line);
     --color-accent: var(--color-blue-200);
   }
-  .join__card > div {
+  .careers__card > div {
     display: grid;
     gap: var(--space-4);
   }
   @media (min-width: 56rem) {
-    .join__card {
+    .careers__card {
       grid-template-columns: 1fr auto;
     }
   }
-  .join__card .btn::before {
+  .careers__card .btn::before {
     background: var(--color-white);
   }
-  .join__card .btn:hover {
+  .careers__card .btn:hover {
     color: var(--color-navy);
     border-color: var(--color-white);
   }
