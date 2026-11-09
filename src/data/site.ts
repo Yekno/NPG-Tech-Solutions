@@ -1,23 +1,24 @@
 // Site-wide settings and navigation. Page content lives in src/content/.
 export const site = {
   name: 'NPG Tech Solutions',
-  tagline: 'Digital Solutions • IT Support • Digital Skills',
+  tagline: 'Practical technology. Real-world solutions.',
   description:
-    'NPG Tech Solutions is a digital solutions company delivering web development, UI/UX, e-commerce, IT support and digital skills training for businesses.',
+    'NPG Tech Solutions works with individuals, businesses and organisations to identify problems, develop practical digital solutions and deliver technology that makes work simpler, smarter and more effective.',
   location: 'Remote — working with clients worldwide',
 };
 
 export const mainNav = [
   { label: 'Services', href: '/services' },
-  { label: 'Portfolio', href: '/portfolio' },
-  { label: 'Team', href: '/team' },
+  { label: 'How We Work', href: '/how-we-work' },
+  { label: 'Our Work', href: '/our-work' },
+  { label: 'Our Team', href: '/team' },
   { label: 'About', href: '/about' },
-  { label: 'Testimonials', href: '/testimonials' },
 ];
 
 export const ctaLinks = {
-  request: { label: 'Request a project', href: '/request-a-project' },
-  careers: { label: 'Join our team', href: '/careers' },
+  request: { label: 'Discuss a Project', href: '/contact' },
+  conversation: { label: 'Start a Conversation', href: '/contact' },
+  join: { label: 'Join our team', href: '/join-our-team' },
 };
 
 export const footerNav = [
@@ -26,8 +27,9 @@ export const footerNav = [
     links: [
       { label: 'Home', href: '/' },
       { label: 'Services', href: '/services' },
-      { label: 'Portfolio', href: '/portfolio' },
-      { label: 'Testimonials', href: '/testimonials' },
+      { label: 'How We Work', href: '/how-we-work' },
+      { label: 'Our Work', href: '/our-work' },
+      { label: 'Contact', href: '/contact' },
     ],
   },
   {
@@ -35,8 +37,7 @@ export const footerNav = [
     links: [
       { label: 'Our team', href: '/team' },
       { label: 'About us', href: '/about' },
-      { label: 'Careers', href: '/careers' },
-      { label: 'Request a project', href: '/request-a-project' },
+      { label: 'Join us', href: '/join-our-team' },
     ],
   },
 ];

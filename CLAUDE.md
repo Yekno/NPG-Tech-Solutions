@@ -1,7 +1,7 @@
 # NPG Tech Solutions Website
 
 ## What this project is
-The company website for NPG Tech Solutions, a digital solutions company offering web development, UI/UX, e-commerce, IT support and digital skills. It presents the company as an established agency: potential clients can explore our work, services and team, then get in touch to request a project. People looking for work can see open roles and apply.
+The company website for NPG Tech Solutions, a digital solutions company offering web development, software and digital solutions, workflow automation, IT and technical support, technical consultancy and digital transformation support. Copy follows the approved Website Production Requirement Document (PRD); claims must be accurate and evidenced. It presents the company as an established agency: potential clients can explore our work, services and team, then get in touch to request a project. People who want to work with us can see open roles and apply.
 
 Voice: "we / our team / our specialists / the company". Never "community", "members" or "collective". Keep it confident and professional.
 
@@ -10,24 +10,27 @@ Voice: "we / our team / our specialists / the company". Never "community", "memb
 2. **Job seekers**: people looking for jobs at the company.
 
 ## Site structure (pages)
-1. **Home**: who we are and what we offer, with clear paths to Services, Portfolio, and Request a Project.
+1. **Home**: who we are and what we offer, with clear paths to Services, Our Work, and Contact.
 2. **Our Team** (`/team`): profiles of our people, including developers, designers, IT support and leadership.
-3. **Services**: web development, UI/UX, e-commerce, maintenance, and so on.
-4. **Portfolio / Projects**: websites and applications the company has built.
-5. **About Us**: mission and how the team works.
-6. **Testimonials**: feedback from clients.
-7. **Request a Project / Contact Us**: a form where clients describe what they need.
-8. **Careers** (`/careers`): open roles plus an application form.
+3. **Services** (`/services`): all six services; Home shows only the four marked `featured`.
+4. **How We Work** (`/how-we-work`): our approach from problem to solution.
+5. **Our Work** (`/our-work`): websites and applications the company has built.
+6. **About Us** (`/about`): mission and how the team works.
+7. **Contact** (`/contact`): a form where clients describe what they need.
+8. **Join Our Team** (`/join-our-team`): open roles plus an application form.
+
+Testimonials only appear once real, approved ones exist (the section hides when the collection is empty).
 
 ## Content model
 Team members, projects, services, testimonials and roles are repeating content, so keep each one as structured data rather than hard-coding it into pages. That way new people, projects and roles can be added without touching layout code.
 - **Team member**: name, photo, role, skills, specialties, short bio, links (GitHub, LinkedIn, portfolio), optional department. Stored in the `developers` collection, which keeps its name for now to avoid churn.
 - **Project**: title, client/type, summary, tech used, contributing team members, images, live link
-- **Service**: name, description, what's included
+- **Service**: name, summary, description, what's included, featured (shown on Home)
 - **Testimonial**: quote, client name, company, related project
 - **Role**: title, type (full-time, part-time, contract, internship), location/remote, summary, responsibilities, requirements, open (boolean)
 
 ## Decisions made
+- **PRD alignment (2026-11-09)**: the site follows the approved requirements document. Careers was renamed Join Our Team (`/join-our-team`, footer label "Join us"), Portfolio became Our Work (`/our-work`), Request a Project became Contact (`/contact`). Unevidenced stats were removed and placeholder testimonials deleted.
 - **Positioning (2026-11-07)**: NPG Tech Solutions presents itself as an organisation (a digital agency / tech company), not a community of developers. "Join the Community" became Careers (`/careers`, CTA "Join our team"), "Our Developers" became Our Team (`/team`), and "About the Community" became About Us.
 - **Stack (2026-10-09)**: Astro + TypeScript, plain CSS with custom properties (no Tailwind/UI framework). No logins planned, so no Next.js.
 - **Hosting**: Vercel free tier, via the `@astrojs/vercel` adapter. Pages are static; only the form handlers run on demand.

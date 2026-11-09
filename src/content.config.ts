@@ -60,6 +60,7 @@ const services = defineCollection({
       description: z.string(),
       included: z.array(z.string()).default([]),
       image: image().optional(),
+      featured: z.boolean().default(false),
       order: z.number().default(100),
     }),
 });
