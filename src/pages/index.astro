@@ -10,7 +10,10 @@ import { ctaLinks, site } from '../data/site';
 const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
 
 const services = (await getCollection('services')).sort(byOrder);
-const featuredServices = services.filter((s) => s.data.featured).slice(0, 4);
+const practices = [
+  { id: 'technology', label: 'Technology and Development' },
+  { id: 'creative', label: 'Design and Creative' },
+].map((p) => ({ ...p, services: services.filter((s) => s.data.practice === p.id) }));
 const projects = (await getCollection('projects')).sort(byOrder);
 const developers = (await getCollection('developers')).sort(byOrder);
 const testimonials = await getCollection('testimonials');
@@ -24,7 +27,7 @@ const homeImages = import.meta.glob<{ default: ImageMetadata }>('../assets/image
 const homeImage = (name: string) =>
   Object.entries(homeImages).find(([path]) => path.split('/').pop()?.split('.')[0] === name)?.[1].default;
 
-const capabilities = services.map((s) => s.data.name);
+const capabilities = practices.flatMap((p) => p.services.map((s) => s.data.name));
 
 // Only claims we can evidence (see the requirements document).
 const stats = [{ value: services.length, suffix: '', label: 'Core services' }];
@@ -59,11 +62,11 @@ const steps = [
         <span class="hero__badge-arrow" aria-hidden="true">›</span>
       </a>
       <h1 id="hero-title" class="h-display" data-split>
-        We turn technology challenges into <span class="text-gradient">workable solutions.</span>
+        We turn business challenges into <span class="text-gradient">workable digital solutions.</span>
       </h1>
       <p class="hero__lead" data-reveal="up" style="--reveal-delay:500">
         {site.name} works with individuals, businesses and organisations to identify problems, develop practical
-        digital solutions and deliver technology that makes work simpler, smarter and more effective.
+        digital solutions and deliver technology and design that make work simpler, smarter and more effective.
       </p>
       <div class="hero__actions" data-reveal="up" style="--reveal-delay:650">
         <a href={ctaLinks.request.href} class="btn" data-magnetic>
@@ -171,20 +174,29 @@ const steps = [
         </div>
         <a href="/services" class="btn btn--ghost" data-reveal="up">All services</a>
       </div>
-      <ul role="list" class="services" data-stagger="90">
+      <div class="practices">
         {
-          featuredServices.map((s, i) => (
-            <li data-reveal="up">
-              <a href={`/services#${s.id}`} class="service" data-spotlight>
-                <span class="service__num">{String(i + 1).padStart(2, '0')}</span>
-                <h3 class="service__title">{s.data.name}</h3>
-                <p>{s.data.summary}</p>
-                <span class="service__arrow" aria-hidden="true">↗</span>
-              </a>
-            </li>
+          practices.map((practice) => (
+            <div class="practice">
+              <h3 class="practice__title" id={`practice-${practice.id}`} data-reveal="up">
+                {practice.label}
+              </h3>
+              <ul role="list" class="services" data-stagger="90" aria-labelledby={`practice-${practice.id}`}>
+                {practice.services.map((s, i) => (
+                  <li data-reveal="up">
+                    <a href={`/services#${s.id}`} class="service" data-spotlight>
+                      <span class="service__num">{String(i + 1).padStart(2, '0')}</span>
+                      <h4 class="service__title">{s.data.name}</h4>
+                      <p>{s.data.summary}</p>
+                      <span class="service__arrow" aria-hidden="true">↗</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))
         }
-      </ul>
+      </div>
     </div>
   </section>
 
@@ -757,13 +769,42 @@ const steps = [
   }
 
   /* ---------- Services ---------- */
+  /* Two practices: stacked on phones and tablets, side by side on wide screens.
+     Each practice is one column of compact cards on phones, a 2 × 2 grid from tablet up. */
+  .practices {
+    display: grid;
+    gap: var(--space-12);
+  }
+  @media (min-width: 64rem) {
+    .practices {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-8);
+    }
+  }
+  .practice {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+  }
+  .practice__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-lg);
+    color: var(--color-heading);
+  }
+  .practice__title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-line);
+  }
   .services {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-    gap: var(--space-4);
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
   }
-  /* Home shows the four featured services: a 2 × 2 grid avoids an orphan card */
-  @media (min-width: 48rem) {
+  @media (min-width: 40rem) {
     .services {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -779,7 +820,8 @@ const steps = [
     align-content: start;
     gap: var(--space-3);
     width: 100%;
-    padding: var(--space-8);
+    padding: var(--space-6);
+    padding-right: calc(var(--space-6) + 2.5rem);
     border: 1px solid var(--color-line);
     border-radius: var(--radius-lg);
     background:
@@ -819,7 +861,7 @@ const steps = [
     color: var(--color-accent);
   }
   .service__title {
-    font-size: var(--text-xl);
+    font-size: var(--text-lg);
     color: var(--color-heading);
   }
   .service p {
@@ -827,8 +869,8 @@ const steps = [
   }
   .service__arrow {
     position: absolute;
-    top: var(--space-6);
-    right: var(--space-6);
+    top: var(--space-4);
+    right: var(--space-4);
     display: grid;
     place-items: center;
     width: 2.5rem;
@@ -848,29 +890,18 @@ const steps = [
     color: var(--color-white);
   }
 
-  /* Phones: compact two-column grid to keep the page short */
+  /* Phones: one column per practice, summaries shown in full */
   @media (max-width: 40rem) {
-    .services {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--space-3);
-    }
     .service {
-      gap: var(--space-2);
-      padding: var(--space-4);
+      gap: var(--space-1);
+      padding: var(--space-4) calc(var(--space-4) + 2rem) var(--space-4) var(--space-4);
       border-radius: var(--radius);
     }
     .service__title {
       font-size: var(--text-base);
-      overflow-wrap: anywhere;
-      hyphens: auto;
     }
     .service p {
-      font-size: var(--text-xs);
-      line-height: 1.5;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      font-size: var(--text-sm);
     }
     .service__num {
       font-size: var(--text-xs);

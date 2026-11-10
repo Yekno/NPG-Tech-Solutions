@@ -1,7 +1,7 @@
 # NPG Tech Solutions Website
 
 ## What this project is
-The company website for NPG Tech Solutions, a digital solutions company offering web development, software and digital solutions, workflow automation, IT and technical support, technical consultancy and digital transformation support. Copy follows the approved Website Production Requirement Document (PRD); claims must be accurate and evidenced. It presents the company as an established agency: potential clients can explore our work, services and team, then get in touch to request a project. People who want to work with us can see open roles and apply.
+The company website for NPG Tech Solutions, a digital solutions company offering eight services in two practices: Technology and Development (web development, software and custom digital solutions, business automation, IT solutions and technical support) and Design and Creative (UI/UX design, graphic design, video editing, social media management). Copy follows the approved Website Production Requirement Document (PRD); claims must be accurate and evidenced. It presents the company as an established agency: potential clients can explore our work, services and team, then get in touch to request a project. People who want to work with us can see open roles and apply.
 
 Voice: "we / our team / our specialists / the company". Never "community", "members" or "collective". Keep it confident and professional.
 
@@ -12,7 +12,7 @@ Voice: "we / our team / our specialists / the company". Never "community", "memb
 ## Site structure (pages)
 1. **Home**: who we are and what we offer, with clear paths to Services, Our Work, and Contact.
 2. **Our Team** (`/team`): profiles of our people, including developers, designers, IT support and leadership.
-3. **Services** (`/services`): all six services; Home shows only the four marked `featured`.
+3. **Services** (`/services`): all eight services with full descriptions, grouped by practice. Home shows compact cards (name + summary) for both practices.
 4. **How We Work** (`/how-we-work`): our approach from problem to solution.
 5. **Our Work** (`/our-work`): websites and applications the company has built.
 6. **About Us** (`/about`): mission and how the team works.
@@ -25,7 +25,7 @@ Testimonials only appear once real, approved ones exist (the section hides when 
 Team members, projects, services, testimonials and roles are repeating content, so keep each one as structured data rather than hard-coding it into pages. That way new people, projects and roles can be added without touching layout code.
 - **Team member**: name, photo, role, skills, specialties, short bio, links (GitHub, LinkedIn, portfolio), optional department. Stored in the `developers` collection, which keeps its name for now to avoid churn.
 - **Project**: title, client/type, summary, tech used, contributing team members, images, live link
-- **Service**: name, summary, description, what's included, featured (shown on Home)
+- **Service**: name, practice (`technology` | `creative`), summary (one short line for compact cards), description, what's included, featured (kept, currently unused), order (within its practice)
 - **Testimonial**: quote, client name, company, related project
 - **Role**: title, type (full-time, part-time, contract, internship), location/remote, summary, responsibilities, requirements, open (boolean)
 

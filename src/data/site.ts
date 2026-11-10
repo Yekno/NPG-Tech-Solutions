@@ -3,7 +3,7 @@ export const site = {
   name: 'NPG Tech Solutions',
   tagline: 'Practical technology. Real-world solutions.',
   description:
-    'NPG Tech Solutions works with individuals, businesses and organisations to identify problems, develop practical digital solutions and deliver technology that makes work simpler, smarter and more effective.',
+    'NPG Tech Solutions works with individuals, businesses and organisations to identify problems, develop practical digital solutions and deliver technology and design that make work simpler, smarter and more effective.',
   location: 'Remote — working with clients worldwide',
 };
 

@@ -56,6 +56,8 @@ const services = defineCollection({
   schema: ({ image }) =>
     z.object({
       name: z.string(),
+      practice: z.enum(['technology', 'creative']),
+      // One short line for compact cards; the full description belongs on the Services page.
       summary: z.string(),
       description: z.string(),
       included: z.array(z.string()).default([]),
