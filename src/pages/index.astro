@@ -14,10 +14,13 @@ const practices = [
   { id: 'technology', label: 'Technology and Development' },
   { id: 'creative', label: 'Design and Creative' },
 ].map((p) => ({ ...p, services: services.filter((s) => s.data.practice === p.id) }));
+// Number cards continuously across both practices (01–04, then 05–08).
+const practiceStart = practices.map((_, i) => practices.slice(0, i).reduce((n, p) => n + p.services.length, 0));
 const projects = (await getCollection('projects')).sort(byOrder);
 const developers = (await getCollection('developers')).sort(byOrder);
 const testimonials = await getCollection('testimonials');
-const featured = projects.filter((p) => p.data.featured).slice(0, 6);
+// Prefer featured projects; fall back to the newest ones. The section is hidden while there are none.
+const featured = (projects.some((p) => p.data.featured) ? projects.filter((p) => p.data.featured) : projects).slice(0, 6);
 
 // Home page images: drop files into src/assets/images/home/ named hero-1, hero-2, hero-3, about
 // (jpg/png/webp/avif). Missing images fall back to a branded placeholder.
@@ -41,10 +44,30 @@ const whyPoints = [
 ];
 
 const steps = [
-  { title: 'Discover', text: 'We learn about your business, your users and what success looks like.' },
-  { title: 'Design', text: 'Wireframes and visual designs you can click through before we build.' },
-  { title: 'Build', text: 'The right specialists on our team build it, with regular check-ins.' },
-  { title: 'Launch & support', text: 'We launch, measure and keep improving — and we stay on call.' },
+  {
+    title: 'Understand',
+    text: 'We listen to your needs, ask questions and clarify the problem, intended users and the outcome you want to achieve.',
+  },
+  {
+    title: 'Define',
+    text: 'We document the requirements, identify the proposed scope and agree on expected deliverables, responsibilities and constraints.',
+  },
+  {
+    title: 'Plan',
+    text: 'We determine the approach, resources, milestones and communication arrangements appropriate to the project.',
+  },
+  {
+    title: 'Build or Implement',
+    text: 'Our team and approved project contributors carry out the agreed work, share progress and raise issues that may affect delivery.',
+  },
+  {
+    title: 'Test and Review',
+    text: "We review the solution against the agreed requirements, address identified issues and obtain the client's feedback.",
+  },
+  {
+    title: 'Deliver and Support',
+    text: 'We hand over the agreed deliverables and discuss any maintenance, updates or further support separately where required.',
+  },
 ];
 ---
 
@@ -78,7 +101,7 @@ const steps = [
       </div>
     </div>
 
-    <!-- Showcase: soft blue glow with the "Your next website" collage rising out of it -->
+    <!-- Showcase: soft blue glow with the "Your next solution" collage rising out of it -->
     <div class="hero__stage">
       <div class="hero__glow" aria-hidden="true">
         <span class="hero__glow-blob hero__glow-blob--1"></span>
@@ -92,7 +115,7 @@ const steps = [
         </a>
         <div class="hero__visual" aria-hidden="true">
           <div class="hero__frame hero__frame--main" data-reveal="up" style="--reveal-delay:700">
-            <Media src={homeImage('hero-1')} alt="" label="Your next website" ratio="16 / 9" loading="eager" sizes="(min-width: 64rem) 60rem, 95vw" />
+            <Media src={homeImage('hero-1')} alt="" label="Your next solution" ratio="16 / 9" loading="eager" sizes="(min-width: 64rem) 60rem, 95vw" />
           </div>
           <div class="hero__frame hero__frame--a" data-reveal="left" style="--reveal-delay:950">
             <Media src={homeImage('hero-2')} alt="" ratio="1 / 1" loading="eager" sizes="220px" />
@@ -102,7 +125,7 @@ const steps = [
           </div>
           <div class="hero__chip" data-reveal="up" style="--reveal-delay:1150">
             <span class="hero__chip-icon">✓</span>
-            <span><strong>Mobile-first</strong><br />Fast &amp; accessible</span>
+            <span><strong>Problem-led</strong><br />Built for the need</span>
           </div>
         </div>
       </div>
@@ -168,15 +191,15 @@ const steps = [
           <p class="eyebrow" data-reveal="up">Services</p>
           <h2 id="services-title" class="h-section" data-split>What We Do</h2>
           <p class="lead" data-reveal="up">
-            From building digital platforms to improving everyday workflows, we provide technology services designed
-            around practical needs.
+            From digital platforms and everyday workflows to design and content, we provide services built around
+            practical needs.
           </p>
         </div>
         <a href="/services" class="btn btn--ghost" data-reveal="up">All services</a>
       </div>
       <div class="practices">
         {
-          practices.map((practice) => (
+          practices.map((practice, pi) => (
             <div class="practice">
               <h3 class="practice__title" id={`practice-${practice.id}`} data-reveal="up">
                 {practice.label}
@@ -185,8 +208,8 @@ const steps = [
                 {practice.services.map((s, i) => (
                   <li data-reveal="up">
                     <a href={`/services#${s.id}`} class="service" data-spotlight>
-                      <span class="service__num">{String(i + 1).padStart(2, '0')}</span>
-                      <h4 class="service__title">{s.data.name}</h4>
+                      <span class="service__num">{String(practiceStart[pi] + i + 1).padStart(2, '0')}</span>
+                      <h4 class="service__title">{s.data.shortName ?? s.data.name}</h4>
                       <p>{s.data.summary}</p>
                       <span class="service__arrow" aria-hidden="true">↗</span>
                     </a>
@@ -228,8 +251,8 @@ const steps = [
 
   <!-- ============ WHY NPG ============ -->
   <section class="section why" aria-labelledby="why-title">
-    <div class="container why__inner">
-      <div class="why__copy">
+    <div class="container">
+      <div class="section-head section-head--center">
         <p class="eyebrow" data-reveal="up">Why NPG</p>
         <h2 id="why-title" class="h-section" data-split>Why Work With NPG?</h2>
         <p class="lead" data-reveal="up">
@@ -252,7 +275,7 @@ const steps = [
 
   <!-- ============ FEATURED WORK (carousel) ============ -->
   {
-    featured.length > 0 && (
+    projects.length > 0 && (
       <section class="section" aria-labelledby="work-title">
         <div class="container">
           <div class="section-head section-head--split">
@@ -769,27 +792,57 @@ const steps = [
   }
 
   /* ---------- Services ---------- */
-  /* Two practices: stacked on phones and tablets, side by side on wide screens.
-     Each practice is one column of compact cards on phones, a 2 × 2 grid from tablet up. */
+  /* Two practices. Every card row lives on one shared grid (via subgrid), so all eight cards
+     are the same height whether the practices are stacked (phones, tablets) or side by side.
+     Phones: one column per practice. Tablets: each practice is 2 × 2. Desktop: practices side by side. */
   .practices {
     display: grid;
-    gap: var(--space-12);
+    gap: var(--space-3) var(--space-8);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto repeat(4, 1fr) auto repeat(4, 1fr);
+  }
+  .practice {
+    display: grid;
+    grid-row: span 5;
+    grid-template-rows: subgrid;
+  }
+  .services {
+    display: grid;
+    grid-row: span 4;
+    grid-template-rows: subgrid;
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: var(--space-3);
+  }
+  /* Extra space above the second group's heading while the groups are stacked */
+  .practice + .practice .practice__title {
+    margin-top: var(--space-8);
+  }
+  @media (min-width: 40rem) {
+    .practices {
+      grid-template-rows: auto 1fr 1fr auto 1fr 1fr;
+    }
+    .practice {
+      grid-row: span 3;
+    }
+    .services {
+      grid-row: span 2;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   @media (min-width: 64rem) {
     .practices {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--space-8);
+      grid-template-rows: auto 1fr 1fr;
     }
-  }
-  .practice {
-    display: grid;
-    gap: var(--space-4);
-    align-content: start;
+    .practice + .practice .practice__title {
+      margin-top: 0;
+    }
   }
   .practice__title {
     display: flex;
     align-items: center;
     gap: var(--space-3);
+    margin-bottom: var(--space-1);
     font-size: var(--text-lg);
     color: var(--color-heading);
   }
@@ -798,16 +851,6 @@ const steps = [
     flex: 1;
     height: 1px;
     background: var(--color-line);
-  }
-  .services {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-3);
-  }
-  @media (min-width: 40rem) {
-    .services {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
   }
   .services > li {
     display: flex;
@@ -930,29 +973,47 @@ const steps = [
     pointer-events: none;
   }
   .steps {
+    --steps-gap: var(--space-8);
     position: relative;
     display: grid;
-    gap: var(--space-8);
+    gap: var(--space-12) var(--steps-gap);
     counter-reset: step;
+  }
+  @media (min-width: 40rem) {
+    .steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   @media (min-width: 56rem) {
     .steps {
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
-    /* connecting line that draws in when revealed */
-    .steps::before {
+  }
+  /* Connecting line from each circle to the next one in the same row; draws in when revealed */
+  @media (min-width: 40rem) {
+    .step::after {
       content: '';
       position: absolute;
       top: 1.75rem;
-      left: 3.5rem;
-      right: 3.5rem;
+      left: calc(3.5rem + var(--space-3));
+      width: calc(100% - 3.5rem - 2 * var(--space-3) + var(--steps-gap));
       height: 2px;
       background: linear-gradient(90deg, var(--color-blue), var(--color-blue-400));
       transform-origin: left;
-      transition: transform 1.6s var(--ease-out) 300ms;
+      transition: transform 1.2s var(--ease-out) 300ms;
     }
-    :global(html.js) .steps:not(:global(.is-visible))::before {
+    :global(html.js) .steps:not(:global(.is-visible)) .step::after {
       transform: scaleX(0);
+    }
+  }
+  @media (min-width: 40rem) and (max-width: 55.99rem) {
+    .step:nth-child(2n)::after {
+      display: none;
+    }
+  }
+  @media (min-width: 56rem) {
+    .step:nth-child(3n)::after {
+      display: none;
     }
   }
   .step {
@@ -1108,31 +1169,23 @@ const steps = [
     color: var(--color-heading);
   }
 
-  /* ---------- Why NPG ---------- */
-  .why__inner {
-    display: grid;
-    gap: var(--space-12);
-    align-items: center;
-  }
-  @media (min-width: 60rem) {
-    .why__inner {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-16);
-    }
-  }
-  .why__copy {
-    display: grid;
-    gap: var(--space-4);
-    justify-items: start;
+  /* ---------- Why NPG ----------
+     Intro centred above the points; the five points form a wrapping row of tiles that stays
+     centred (5 across on desktop, 2 + 2 + 1 centred on tablets, a single column on phones). */
+  .why .section-head {
+    margin-bottom: var(--space-8);
   }
   .why__list {
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: var(--space-3);
   }
   .why__item {
     display: flex;
     align-items: center;
     gap: var(--space-4);
+    flex: 1 1 100%;
     padding: var(--space-4) var(--space-6);
     border: 1px solid var(--color-line);
     border-radius: var(--radius);
@@ -1144,8 +1197,22 @@ const steps = [
       transform var(--dur) var(--ease-out),
       border-color var(--dur) var(--ease-out);
   }
+  @media (min-width: 40rem) {
+    .why__item {
+      flex: 0 1 calc(50% - var(--space-3) / 2);
+    }
+  }
+  @media (min-width: 64rem) {
+    .why__item {
+      flex: 1 1 0;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-6);
+    }
+  }
   .why__item:hover {
-    transform: translateX(4px);
+    transform: translateY(-4px);
     border-color: var(--color-accent);
   }
   .why__check {

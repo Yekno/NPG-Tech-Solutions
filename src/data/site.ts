@@ -21,6 +21,8 @@ export const ctaLinks = {
   join: { label: 'Join our team', href: '/join-our-team' },
 };
 
+export const legalLinks = [{ label: 'Privacy Notice', href: '/privacy' }];
+
 export const footerNav = [
   {
     heading: 'Explore',
