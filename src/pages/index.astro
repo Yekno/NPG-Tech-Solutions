@@ -1099,7 +1099,7 @@ const steps = [
 
   /* ---------- Team ---------- */
   /* Phones: a swipeable row (like the Our Work carousel) to keep the page short.
-     Wider screens: a regular grid. */
+     Wider screens: a centred grid. */
   .devs {
     display: grid;
     grid-auto-flow: column;
@@ -1123,7 +1123,10 @@ const steps = [
     .devs {
       grid-auto-flow: row;
       grid-auto-columns: auto;
-      grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+      /* Fixed-width columns centred in the row: 2 people sit centred, and a 3rd or 4th
+         fills in naturally (wrapping to a new centred row when space runs out). */
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 17rem));
+      justify-content: center;
       gap: var(--space-6);
       margin-inline: 0;
       padding: 0;
@@ -1170,60 +1173,47 @@ const steps = [
   }
 
   /* ---------- Why NPG ----------
-     Intro centred above the points; the five points form a wrapping row of tiles that stays
-     centred (5 across on desktop, 2 + 2 + 1 centred on tablets, a single column on phones). */
+     Intro centred above a plain ticked list: one row of five on desktop, two columns on
+     tablets, one on phones. No boxes, so no item carries empty space. */
   .why .section-head {
     margin-bottom: var(--space-8);
   }
   .why__list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-3);
-  }
-  .why__item {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    flex: 1 1 100%;
-    padding: var(--space-4) var(--space-6);
-    border: 1px solid var(--color-line);
-    border-radius: var(--radius);
-    background: var(--color-card);
-    box-shadow: var(--shadow-sm);
-    font-weight: 600;
-    color: var(--color-heading);
-    transition:
-      transform var(--dur) var(--ease-out),
-      border-color var(--dur) var(--ease-out);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4) var(--space-8);
+    max-width: 40rem;
+    margin-inline: auto;
   }
   @media (min-width: 40rem) {
-    .why__item {
-      flex: 0 1 calc(50% - var(--space-3) / 2);
+    .why__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   @media (min-width: 64rem) {
-    .why__item {
-      flex: 1 1 0;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--space-3);
-      padding: var(--space-6);
+    .why__list {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      max-width: none;
     }
   }
-  .why__item:hover {
-    transform: translateY(-4px);
-    border-color: var(--color-accent);
+  .why__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--color-heading);
   }
   .why__check {
     display: grid;
     flex: none;
     place-items: center;
-    width: 2rem;
-    height: 2rem;
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 50%;
     background: var(--color-chip-bg);
     color: var(--color-accent);
+    font-size: var(--text-xs);
     font-weight: 800;
   }
 
