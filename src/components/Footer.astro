@@ -3,6 +3,25 @@ import { Image } from 'astro:assets';
 import logo from '../assets/brand/logo-horizontal.png';
 import { footerNav, legalLinks, ctaLinks, site } from '../data/site';
 
+export interface FooterCta {
+  title: string;
+  text: string;
+  link: { label: string; href: string };
+}
+
+interface Props {
+  cta?: FooterCta;
+}
+
+// Pages can pass their own closing CTA; otherwise the site-wide one is used.
+const {
+  cta = {
+    title: 'Have a problem you want technology to solve?',
+    text: 'Tell us what you are trying to achieve. We would be glad to understand your needs and discuss a practical way forward.',
+    link: ctaLinks.conversation,
+  },
+} = Astro.props;
+
 const year = new Date().getFullYear();
 ---
 
@@ -10,13 +29,10 @@ const year = new Date().getFullYear();
   <div class="site-footer__glow" aria-hidden="true"></div>
   <div class="container">
     <div class="site-footer__cta" data-reveal="up">
-      <h2 class="site-footer__title">Have a problem you want technology to solve?</h2>
-      <p>
-        Tell us what you are trying to achieve. We would be glad to understand your needs and discuss a practical way
-        forward.
-      </p>
-      <a href={ctaLinks.conversation.href} class="btn" data-magnetic>
-        {ctaLinks.conversation.label} <span class="btn__arrow" aria-hidden="true">→</span>
+      <h2 class="site-footer__title">{cta.title}</h2>
+      <p>{cta.text}</p>
+      <a href={cta.link.href} class="btn" data-magnetic>
+        {cta.link.label} <span class="btn__arrow" aria-hidden="true">→</span>
       </a>
     </div>
 

@@ -1,0 +1,246 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { ctaLinks } from '../data/site';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const practices = [
+  { id: 'technology', label: 'Technology and Development' },
+  { id: 'creative', label: 'Design and Creative' },
+].map((p) => ({ ...p, services: services.filter((s) => s.data.practice === p.id) }));
+// Number continuously across both practices (01–04, then 05–08), matching the home page cards.
+const practiceStart = practices.map((_, i) => practices.slice(0, i).reduce((n, p) => n + p.services.length, 0));
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<BaseLayout
+  title="Services"
+  description="Web development, custom software, business automation, IT support, UI/UX, graphic design, video editing and social media management for individuals, businesses and organisations."
+  cta={{
+    title: 'Not sure which service you need?',
+    text: 'Describe the challenge, and we will help identify a suitable next step.',
+    link: ctaLinks.request,
+  }}
+>
+  <!-- ============ PAGE INTRO ============ -->
+  <section class="page-hero" aria-labelledby="page-title" data-island-label="Services">
+    <div class="page-hero__bg" aria-hidden="true"><span class="page-hero__grid"></span></div>
+    <div class="container page-hero__copy">
+      <p class="eyebrow" data-reveal="up">Services</p>
+      <h1 id="page-title" class="h-display" data-split>Our Services</h1>
+      <p class="lead" data-reveal="up">
+        NPG Tech Solutions provides practical technology and design services for individuals, businesses and
+        organisations. We begin by understanding the challenge, then recommend and deliver an approach that fits the
+        required outcome, available resources and project scope.
+      </p>
+      <nav class="practice-nav" aria-label="Jump to a practice" data-reveal="up">
+        {
+          practices.map((p) => (
+            <a href={`#${p.id}`} class="practice-nav__link">
+              {p.label} <span aria-hidden="true">↓</span>
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </section>
+
+  <!-- ============ PRACTICES ============ -->
+  {
+    practices.map((practice, pi) => (
+      <section
+        id={practice.id}
+        class:list={['section', 'practice-section', { 'section--surface': pi % 2 === 1 }]}
+        aria-labelledby={`${practice.id}-title`}
+        data-island-label={practice.label}
+      >
+        <div class="container">
+          <div class="section-head">
+            <p class="eyebrow" data-reveal="up">
+              {practice.services.length} services
+            </p>
+            <h2 id={`${practice.id}-title`} class="h-section" data-split>
+              {practice.label}
+            </h2>
+          </div>
+          <ul role="list" class="offerings" data-stagger="100">
+            {practice.services.map((s, i) => (
+              <li id={s.id} class="offering" data-reveal="up" data-spotlight>
+                <span class="offering__num" aria-hidden="true">
+                  {pad(practiceStart[pi] + i + 1)}
+                </span>
+                <h3 id={`${s.id}-title`} class="offering__title">
+                  {s.data.name}
+                </h3>
+                <p class="offering__desc">{s.data.description}</p>
+                {s.data.included.length > 0 && (
+                  <ul role="list" class="offering__included">
+                    {s.data.included.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    ))
+  }
+</BaseLayout>
+
+<style>
+  /* ---------- Page intro ----------
+     A shorter cousin of the home hero: same grid backdrop and centred type, no showcase. */
+  .page-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-top: calc(var(--island-space) + clamp(2rem, 1rem + 4vw, 4.5rem));
+    padding-bottom: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+    text-align: center;
+  }
+  .page-hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .page-hero__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--color-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    opacity: 0.6;
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000, transparent 75%);
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000, transparent 75%);
+  }
+  .page-hero__copy {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-6);
+  }
+  .page-hero .lead {
+    max-width: 46rem;
+  }
+  .practice-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+  .practice-nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.55rem 1.1rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    background: var(--color-card);
+    box-shadow: var(--shadow-sm);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-heading);
+    text-decoration: none;
+    transition:
+      border-color var(--dur-fast),
+      transform var(--dur) var(--ease-out);
+  }
+  .practice-nav__link:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+  }
+  .practice-nav__link span {
+    color: var(--color-accent);
+  }
+
+  /* ---------- Practices ----------
+     Each practice is its own section (alternating with the surface gradient, as on Home).
+     Services are roomy cards in a 2 × 2 grid from tablet up, one column on phones, so a full
+     paragraph has a comfortable line length (~55–70 characters) at every width. */
+  .practice-section .section-head {
+    margin-bottom: var(--space-8);
+  }
+  .offerings {
+    display: grid;
+    gap: var(--space-4);
+  }
+  @media (min-width: 48rem) {
+    .offerings {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-6);
+    }
+  }
+  .offering {
+    --mx: 50%;
+    --my: 50%;
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(360px circle at var(--mx) var(--my), rgb(6 85 225 / 0.1), transparent 70%),
+      var(--color-card);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    /* Land below the floating header when reached via /services#slug (adds to the page's scroll-padding). */
+    scroll-margin-top: var(--space-6);
+    transition:
+      border-color var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out);
+  }
+  .offering::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-blue), var(--color-blue-400));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .offering:hover {
+    box-shadow: var(--shadow);
+  }
+  .offering:hover::after,
+  .offering:target::after {
+    transform: scaleX(1);
+  }
+  /* Briefly highlight the service you arrived at from a home page card */
+  .offering:target {
+    border-color: var(--color-accent);
+  }
+  .offering__num {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+  .offering__title {
+    font-size: var(--text-xl);
+    color: var(--color-heading);
+  }
+  .offering__desc {
+    color: var(--color-muted);
+    line-height: 1.7;
+  }
+  .offering__included {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text);
+  }
+  .offering__included li::before {
+    content: '✓';
+    margin-right: var(--space-2);
+    color: var(--color-accent);
+    font-weight: 800;
+  }
+</style>
