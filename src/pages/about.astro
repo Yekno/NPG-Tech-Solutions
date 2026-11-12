@@ -1,0 +1,250 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Approved copy (PRD). Only this page uses the values, so they live here.
+const values = [
+  { name: 'Integrity', text: 'We act honestly, communicate transparently and take responsibility for our commitments.' },
+  {
+    name: 'Practical Problem-Solving',
+    text: 'We focus on understanding the real issue and developing solutions that serve a clear purpose.',
+  },
+  {
+    name: 'Excellence and Quality',
+    text: 'We aim to deliver work that is thoughtful, functional, dependable, and continually improved.',
+  },
+  {
+    name: 'Collaboration',
+    text: 'We believe good solutions emerge when people combine their knowledge, skills and perspectives.',
+  },
+  {
+    name: 'Accountability',
+    text: 'We take ownership of assigned responsibilities, agreed timelines and the quality of our work.',
+  },
+  {
+    name: 'Learning and Innovation',
+    text: 'We remain curious, develop our capabilities and apply appropriate new ideas and tools.',
+  },
+];
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<!-- No cta prop: the footer's default closing CTA is the approved wording. -->
+<BaseLayout
+  title="About"
+  description="NPG Tech Solutions is a technology solutions organisation focused on solving practical problems through digital development, technical thinking and collaborative execution."
+>
+  <!-- ============ PAGE INTRO ============ -->
+  <section class="page-hero" aria-labelledby="page-title" data-island-label="About">
+    <div class="page-hero__bg" aria-hidden="true"><span class="page-hero__grid"></span></div>
+    <div class="container page-hero__copy">
+      <p class="eyebrow" data-reveal="up">About us</p>
+      <h1 id="page-title" class="h-display" data-split>About NPG</h1>
+      <p class="lead" data-reveal="up">
+        NPG Tech Solutions is a technology solutions organisation focused on solving practical problems through digital
+        development, technical thinking and collaborative execution. We work to understand the needs of individuals,
+        businesses and organisations and translate those needs into useful technology solutions. We believe technology
+        has the greatest value when it addresses a real challenge, improves a process, or creates a better way to do
+        something.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ HOW WE OPERATE ============ -->
+  <section class="section operate" aria-labelledby="operate-title" data-island-label="How we operate">
+    <div class="container operate__inner">
+      <h2 id="operate-title" class="h-section" data-split>How we operate</h2>
+      <p class="operate__copy" data-reveal="up">
+        NPG operates as a solutions-focused organisation. We identify opportunities, engage with clients, define project
+        requirements and coordinate the people and resources needed to deliver agreed work. Alongside this operating
+        model, we are developing a collaborative network of people who can contribute to suitable projects as the
+        organisation grows.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ MISSION AND VISION ============ -->
+  <section class="section section--dark purpose" aria-label="Mission and vision" data-island-label="Mission and vision">
+    <div class="purpose__glow" aria-hidden="true"></div>
+    <div class="container">
+      <div class="purpose__grid" data-stagger="150">
+        <article class="statement" aria-labelledby="mission-title" data-reveal="up">
+          <h2 id="mission-title" class="statement__label">Our mission</h2>
+          <p class="statement__text">
+            To solve practical problems by delivering accessible, useful and dependable technology solutions through
+            technical capability, collaboration and continuous improvement.
+          </p>
+        </article>
+        <article class="statement" aria-labelledby="vision-title" data-reveal="up">
+          <h2 id="vision-title" class="statement__label">Our vision</h2>
+          <p class="statement__text">
+            To become a trusted technology solutions organisation known for turning ideas and challenges into practical
+            solutions, while building a strong network of capable people who contribute to meaningful technology
+            projects.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CORE VALUES ============ -->
+  <section class="section values" aria-labelledby="values-title" data-island-label="Core values">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <h2 id="values-title" class="h-section" data-split>Core values</h2>
+      </div>
+      <ul role="list" class="values__grid" data-stagger="90">
+        {
+          values.map((v, i) => (
+            <li class="value" data-reveal="up" data-spotlight>
+              <span class="value__num" aria-hidden="true">
+                {pad(i + 1)}
+              </span>
+              <h3 class="value__name">{v.name}</h3>
+              <p class="value__text">{v.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ CLOSING STATEMENT ============ -->
+  <section class="section section--surface closing" aria-label="Looking ahead">
+    <div class="container">
+      <p class="closing__text" data-reveal="up">
+        We are building NPG with a long&#8209;term view: delivering value to clients today while creating the structure,
+        relationships and capabilities needed for greater work tomorrow.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---------- How we operate ----------
+     Heading left, copy right from 48rem (same pattern as Working principles on How We Work). */
+  .operate__inner {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 64rem;
+  }
+  @media (min-width: 48rem) {
+    .operate__inner {
+      grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+      column-gap: var(--space-8);
+      align-items: start;
+    }
+  }
+  .operate__copy {
+    font-size: var(--text-lg);
+    line-height: 1.7;
+    color: var(--color-text);
+    max-width: 44rem;
+  }
+
+  /* ---------- Mission and vision ----------
+     A dark band so the two statements stand apart from the body copy: large type, side by
+     side from 48rem, stacked on phones. */
+  .purpose {
+    overflow: hidden;
+  }
+  .purpose__glow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 50rem;
+    height: 30rem;
+    translate: -50% -50%;
+    background: radial-gradient(closest-side, rgb(6 85 225 / 0.3), transparent);
+    pointer-events: none;
+  }
+  .purpose__grid {
+    position: relative;
+    display: grid;
+    gap: var(--space-6);
+  }
+  @media (min-width: 48rem) {
+    .purpose__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-8);
+    }
+  }
+  .statement {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+    padding: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+    border: 1px solid var(--color-line);
+    border-top: 3px solid var(--color-blue);
+    border-radius: var(--radius-lg);
+    background: rgb(255 255 255 / 0.04);
+  }
+  .statement__label {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+  .statement__text {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--color-heading);
+  }
+
+  /* ---------- Core values ----------
+     Six cards: 1 column on phones, 2 from 40rem, 3 from 64rem (two even rows, no orphans). */
+  .values__grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+  @media (min-width: 40rem) {
+    .values__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 64rem) {
+    .values__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-6);
+    }
+  }
+  .value {
+    --mx: 50%;
+    --my: 50%;
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(320px circle at var(--mx) var(--my), rgb(6 85 225 / 0.1), transparent 70%),
+      var(--color-card);
+    box-shadow: var(--shadow-sm);
+  }
+  .value__num {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+  .value__name {
+    font-size: var(--text-lg);
+    color: var(--color-heading);
+  }
+  .value__text {
+    color: var(--color-muted);
+    line-height: 1.7;
+  }
+
+  /* ---------- Closing statement ---------- */
+  .closing__text {
+    max-width: 48rem;
+    margin-inline: auto;
+    text-align: center;
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--color-heading);
+  }
+</style>
