@@ -116,6 +116,8 @@ const year = new Date().getFullYear();
   .container {
     position: relative;
   }
+  /* Phones and tablets: stacked. Wide screens: headline on the left, copy and button on
+     the right, so neither half of the row sits empty. */
   .site-footer__cta {
     display: grid;
     justify-items: start;
@@ -131,6 +133,24 @@ const year = new Date().getFullYear();
   .site-footer__cta p {
     max-width: 36rem;
     font-size: var(--text-lg);
+  }
+  @media (min-width: 56rem) {
+    .site-footer__cta {
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      align-items: center;
+      gap: var(--space-6) var(--space-16);
+    }
+    .site-footer__title {
+      grid-row: 1 / span 2;
+      align-self: center;
+    }
+    .site-footer__cta p {
+      align-self: end;
+    }
+    .site-footer__cta .btn {
+      align-self: start;
+    }
   }
   .site-footer__cta .btn::before {
     background: var(--color-white);

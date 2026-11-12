@@ -90,41 +90,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
 </BaseLayout>
 
 <style>
-  /* ---------- Page intro ----------
-     A shorter cousin of the home hero: same grid backdrop and centred type, no showcase. */
-  .page-hero {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    padding-top: calc(var(--island-space) + clamp(2rem, 1rem + 4vw, 4.5rem));
-    padding-bottom: clamp(2.5rem, 1.5rem + 3vw, 4rem);
-    text-align: center;
-  }
-  .page-hero__bg {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-  }
-  .page-hero__grid {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--color-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
-    background-size: 64px 64px;
-    opacity: 0.6;
-    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000, transparent 75%);
-    mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000, transparent 75%);
-  }
-  .page-hero__copy {
-    display: grid;
-    justify-items: center;
-    gap: var(--space-6);
-  }
-  .page-hero .lead {
-    max-width: 46rem;
-  }
   .practice-nav {
     display: flex;
     flex-wrap: wrap;

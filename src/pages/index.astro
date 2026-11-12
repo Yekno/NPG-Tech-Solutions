@@ -6,6 +6,7 @@ import Media from '../components/Media.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import DeveloperCard from '../components/DeveloperCard.astro';
 import { ctaLinks, site } from '../data/site';
+import { stages } from '../data/process';
 
 const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
 
@@ -41,33 +42,6 @@ const whyPoints = [
   'Collaborative project execution',
   'Clear communication and accountability',
   'Commitment to learning and continuous improvement',
-];
-
-const steps = [
-  {
-    title: 'Understand',
-    text: 'We listen to your needs, ask questions and clarify the problem, intended users and the outcome you want to achieve.',
-  },
-  {
-    title: 'Define',
-    text: 'We document the requirements, identify the proposed scope and agree on expected deliverables, responsibilities and constraints.',
-  },
-  {
-    title: 'Plan',
-    text: 'We determine the approach, resources, milestones and communication arrangements appropriate to the project.',
-  },
-  {
-    title: 'Build or Implement',
-    text: 'Our team and approved project contributors carry out the agreed work, share progress and raise issues that may affect delivery.',
-  },
-  {
-    title: 'Test and Review',
-    text: "We review the solution against the agreed requirements, address identified issues and obtain the client's feedback.",
-  },
-  {
-    title: 'Deliver and Support',
-    text: 'We hand over the agreed deliverables and discuss any maintenance, updates or further support separately where required.',
-  },
 ];
 ---
 
@@ -237,7 +211,7 @@ const steps = [
       </div>
       <ol role="list" class="steps" data-stagger="150" data-reveal="up">
         {
-          steps.map((step, i) => (
+          stages.map((step, i) => (
             <li class="step" data-reveal="up">
               <span class="step__num">{String(i + 1).padStart(2, '0')}</span>
               <h3>{step.title}</h3>
