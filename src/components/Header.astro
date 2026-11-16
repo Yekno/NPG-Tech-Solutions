@@ -45,7 +45,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
 
       <ThemeToggle />
 
-      <a href={ctaLinks.request.href} class="btn island__cta">
+      <a href={ctaLinks.request.href} class="btn island__cta" aria-current={isCurrent(ctaLinks.request.href) ? 'page' : undefined}>
         {ctaLinks.request.label} <span class="btn__arrow" aria-hidden="true">→</span>
       </a>
 
@@ -71,7 +71,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
           </ul>
         </nav>
         <div class="island__panel-ctas">
-          <a href={ctaLinks.request.href} class="btn">
+          <a href={ctaLinks.request.href} class="btn" aria-current={isCurrent(ctaLinks.request.href) ? 'page' : undefined}>
             {ctaLinks.request.label} <span class="btn__arrow" aria-hidden="true">→</span>
           </a>
           <a href={ctaLinks.join.href} class="island__join">{ctaLinks.join.label}</a>

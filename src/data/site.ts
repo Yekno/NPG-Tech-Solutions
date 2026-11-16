@@ -4,7 +4,15 @@ export const site = {
   tagline: 'Practical technology. Real-world solutions.',
   description:
     'NPG Tech Solutions works with individuals, businesses and organisations to identify problems, develop practical digital solutions and deliver technology and design that make work simpler, smarter and more effective.',
-  location: 'Remote — working with clients worldwide',
+};
+
+// How to reach the company. Used by the Contact page and the footer.
+export const contact = {
+  email: 'npgsolutions2026@outlook.com',
+  phone: '+234 813 386 9304',
+  tel: '+2348133869304',
+  whatsapp: 'https://wa.me/2348133869304',
+  location: 'Remotely',
 };
 
 export const mainNav = [

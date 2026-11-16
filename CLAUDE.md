@@ -34,7 +34,7 @@ Team members, projects, services, testimonials and roles are repeating content, 
 - **Positioning (2026-11-07)**: NPG Tech Solutions presents itself as an organisation (a digital agency / tech company), not a community of developers. "Join the Community" became Careers (`/careers`, CTA "Join our team"), "Our Developers" became Our Team (`/team`), and "About the Community" became About Us.
 - **Stack (2026-10-09)**: Astro + TypeScript, plain CSS with custom properties (no Tailwind/UI framework). No logins planned, so no Next.js.
 - **Hosting**: Vercel free tier, via the `@astrojs/vercel` adapter. Pages are static; only the form handlers run on demand.
-- **Form submissions**: Astro Actions validate with a shared Zod schema (client + server), spam-protected by Cloudflare Turnstile + a honeypot field, then emailed to the team inbox via Resend. No database.
+- **Form submissions (2026-11-16)**: plain POST, progressively enhanced. `/contact` renders on demand and handles its own POST so the form works without JavaScript (errors re-render with values kept; success redirects to `?sent=1`). With JS, the page validates inline and submits to `/api/contact` (JSON). Both share `src/lib/contact.ts`; validation rules live in `src/lib/contact-rules.ts` so the browser and server run the same checks. A honeypot field is always on; Cloudflare Turnstile switches on only when both `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` are set (with it on, no-JS submissions can't pass the check). Sent via Resend to `CONTACT_TO_EMAIL` with the submitter as reply-to. Nothing is stored. Env vars are declared with `astro:env` in `astro.config.mjs`; see `.env.example`.
 - **Content management**: files in the repo, edited by developers. One file per entry in Astro content collections, laid out so Keystatic can be added later without moving content. No CMS for now.
 - **Design reference**: https://www.snaperdigital.com/ (modern agency style with lots of motion and imagery).
 - **Motion**: CSS plus a small vanilla script (`src/scripts/motion.ts`) driven by `data-*` attributes (reveal, split, count, parallax, magnetic, tilt, spotlight). No animation library. Content must stay visible without JS, and all motion must respect `prefers-reduced-motion`.
@@ -43,8 +43,8 @@ Team members, projects, services, testimonials and roles are repeating content, 
 - **Brand**: name "NPG Tech Solutions". Logo files live in `brand/` (originals) and `src/assets/brand/` (used by the site). Colors from the logo: navy `#021854`, blue `#0655E1`. Neutral system fonts for now.
 
 ## Decisions still open
-- Domain (none chosen yet). Resend needs a verified sending domain before it can email the team inbox in production.
-- Team email address that receives form submissions (set at deploy time via env var).
+- Domain (none chosen yet). Until a domain is verified in Resend, mail is sent from `onboarding@resend.dev`, which Resend only delivers to the Resend account owner's own address, so the Resend account must be registered with npgsolutions2026@outlook.com. Change `CONTACT_FROM_EMAIL` once the domain is verified.
+- Official social media accounts (footer has a commented placeholder; don't show inactive or unofficial ones).
 - Final typography.
 
 Update these sections as decisions are made.

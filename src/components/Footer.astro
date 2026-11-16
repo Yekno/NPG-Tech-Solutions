@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import logo from '../assets/brand/logo-horizontal.png';
-import { footerNav, legalLinks, ctaLinks, site } from '../data/site';
+import { footerNav, legalLinks, ctaLinks, site, contact } from '../data/site';
 
 export interface FooterCta {
   title: string;
@@ -42,7 +42,12 @@ const year = new Date().getFullYear();
           <Image src={logo} alt={site.name} width={260} densities={[1, 2]} />
         </a>
         <p>{site.description}</p>
-        <p class="site-footer__location">{site.location}</p>
+        {/*
+          Social links go here once the team supplies the official accounts, e.g.
+          <ul role="list" class="site-footer__social">…</ul>
+          The requirements document says not to display inactive or unofficial accounts,
+          so leave this empty until real ones are confirmed.
+        */}
       </div>
       {
         footerNav.map((group) => (
@@ -58,6 +63,19 @@ const year = new Date().getFullYear();
           </nav>
         ))
       }
+      <div class="site-footer__contact">
+        <h2 class="site-footer__heading">Get in touch</h2>
+        <ul role="list">
+          <li><a href={`mailto:${contact.email}`}>{contact.email}</a></li>
+          <li><a href={`tel:${contact.tel}`}>{contact.phone}</a></li>
+          <li>
+            <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer">
+              WhatsApp <span class="visually-hidden">(opens in a new tab)</span><span aria-hidden="true">↗</span>
+            </a>
+          </li>
+          <li class="site-footer__location">Operating location: {contact.location}</li>
+        </ul>
+      </div>
     </div>
 
     <div class="site-footer__bottom">
@@ -170,11 +188,25 @@ const year = new Date().getFullYear();
   .site-footer__brand {
     grid-column: 1 / -1;
   }
+  /* Contact group spans both columns on phones (the email address is long) */
+  .site-footer__contact {
+    grid-column: 1 / -1;
+  }
+  /* Tablets: brand across the top, then the three groups in a row */
   @media (min-width: 48rem) {
     .site-footer__grid {
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: var(--space-12);
+      grid-template-columns: 1fr 1fr 1.4fr;
+      gap: var(--space-12) var(--space-8);
       padding-block: var(--space-16);
+    }
+    .site-footer__contact {
+      grid-column: auto;
+    }
+  }
+  /* Desktop: brand and all three groups in one row */
+  @media (min-width: 64rem) {
+    .site-footer__grid {
+      grid-template-columns: 1.6fr 1fr 1fr 1.4fr;
     }
     .site-footer__brand {
       grid-column: auto;
@@ -208,9 +240,20 @@ const year = new Date().getFullYear();
     text-transform: uppercase;
     color: var(--color-white);
   }
-  nav ul {
+  nav ul,
+  .site-footer__contact ul {
     display: grid;
     gap: var(--space-3);
+  }
+  .site-footer__contact a {
+    color: #c9d3ee;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: color var(--dur-fast);
+  }
+  .site-footer__contact a:hover {
+    color: var(--color-white);
+    text-decoration: underline;
   }
   nav a {
     color: #c9d3ee;
