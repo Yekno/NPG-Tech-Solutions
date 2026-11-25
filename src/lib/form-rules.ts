@@ -47,16 +47,21 @@ const person: Record<'name' | 'email', FieldRule> = {
 };
 const requiredPhone: FieldRule = { label: 'Phone', max: 40, required: 'Enter your phone number.' };
 
-// Same wording on every form; only the noun changes.
-const messages = (thing: 'enquiry' | 'application') => ({
-  success: `Thank you for contacting NPG Tech Solutions. Your ${thing} has been submitted. Our team will review it and get back to you using the contact details provided.`,
-  error: `We could not submit your ${thing}. Please check the required fields and try again. If the problem continues, contact us through the email or telephone details listed on this page.`,
-});
+// Client and Scout enquiries are promised a reply. Applications are not: the page says placement
+// isn't guaranteed, so the application form has its own success message.
+const ENQUIRY_SUCCESS =
+  'Thank you for contacting NPG Tech Solutions. Your enquiry has been submitted. Our team will review it and get back to you using the contact details provided.';
+const APPLICATION_SUCCESS =
+  'Thank you for your interest in NPG Tech Solutions. Your application has been submitted. We will be in touch if a suitable opportunity arises.';
+
+// The email and telephone details are in the footer of every page (and beside the Contact form).
+const errorMessage = (thing: 'enquiry' | 'application') =>
+  `We could not submit your ${thing}. Please check the required fields and try again. If the problem continues, contact us through the email or telephone details listed on this page.`;
 
 export const FORMS: Record<FormId, FormDef> = {
   contact: {
     honeypot: 'hp_field_x',
-    messages: messages('enquiry'),
+    messages: { success: ENQUIRY_SUCCESS, error: errorMessage('enquiry') },
     fields: {
       ...person,
       phone: { label: 'Phone', max: 40 },
@@ -68,7 +73,7 @@ export const FORMS: Record<FormId, FormDef> = {
   },
   application: {
     honeypot: 'hp_field_y',
-    messages: messages('application'),
+    messages: { success: APPLICATION_SUCCESS, error: errorMessage('application') },
     fields: {
       ...person,
       phone: requiredPhone,
@@ -92,7 +97,7 @@ export const FORMS: Record<FormId, FormDef> = {
   },
   scout: {
     honeypot: 'hp_field_z',
-    messages: messages('enquiry'),
+    messages: { success: ENQUIRY_SUCCESS, error: errorMessage('enquiry') },
     fields: {
       ...person,
       phone: requiredPhone,
