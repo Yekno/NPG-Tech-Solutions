@@ -1,0 +1,79 @@
+---
+// One labelled field inside an EnquiryForm: label, optional hint, control and error message.
+// Required state, max length and fixed dropdown options come from src/lib/form-rules.ts.
+import { FORMS, type FormId } from '../lib/form-rules';
+import type { FormState } from '../lib/forms';
+
+interface Props {
+  form: FormId;
+  state: FormState;
+  name: string;
+  label: string;
+  /** Tag shown after the label of an optional field. */
+  optional?: string;
+  type?: 'text' | 'email' | 'tel' | 'url';
+  autocomplete?: 'name' | 'email' | 'tel' | 'organization';
+  /** Renders a textarea with this many rows. */
+  rows?: number;
+  /** Renders a dropdown; defaults to the options in the form rules. */
+  options?: readonly string[];
+  /** First, empty dropdown option. Left out when there is only one thing to choose. */
+  placeholder?: string;
+  /** Permanent help text, announced with the field. */
+  hint?: string;
+}
+
+const { form, state, name, label, optional = 'Optional', type = 'text', autocomplete, rows, placeholder, hint } = Astro.props;
+const rule = FORMS[form].fields[name];
+const options = Astro.props.options ?? rule.options;
+const value = state.values[name];
+const error = state.errors[name];
+const id = `${form}-${name}`;
+const hintId = hint ? `${id}-hint` : undefined;
+
+const attrs = {
+  id,
+  name,
+  required: !!rule.required || undefined,
+  'aria-required': rule.required ? ('true' as const) : undefined,
+  'aria-invalid': error ? ('true' as const) : undefined,
+  'aria-describedby': [hintId, error && `${id}-error`].filter(Boolean).join(' ') || undefined,
+  'data-hint': hintId,
+};
+---
+
+<div class="field">
+  <label for={id}>
+    {/* Non-breaking space: the asterisk never wraps onto a line of its own. */}
+    {label}{rule.required ? <>&nbsp;<span class="field__req" aria-hidden="true">*</span></> : <> <span class="field__opt">{optional}</span></>}
+  </label>
+  {
+    hint && (
+      <p class="field__hint" id={hintId}>
+        {hint}
+      </p>
+    )
+  }
+  {
+    options ? (
+      <select {...attrs}>
+        {placeholder && (
+          <option value="" selected={!value}>
+            {placeholder}
+          </option>
+        )}
+        {options.map((o) => (
+          <option value={o} selected={value === o}>
+            {o}
+          </option>
+        ))}
+      </select>
+    ) : rows ? (
+      <textarea {...attrs} rows={rows} maxlength={rule.max} set:text={value} />
+    ) : (
+      <input {...attrs} type={type} autocomplete={autocomplete} maxlength={rule.max} value={value} />
+    )
+  }
+  <p class="field__error" id={`${id}-error`} hidden={!error}>{error}</p>
+  <slot />
+</div>

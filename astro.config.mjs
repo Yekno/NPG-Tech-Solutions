@@ -11,9 +11,9 @@ export default defineConfig({
   site: 'https://npg-tech-solutions.vercel.app',
   adapter: vercel(),
   integrations: [sitemap()],
-  // Contact form settings, read at runtime on the server (see .env.example). All optional:
-  // without RESEND_API_KEY the form reports an error instead of sending; without both
-  // Turnstile keys the form relies on the honeypot alone.
+  // Form settings, read at runtime on the server (see .env.example). All optional:
+  // without RESEND_API_KEY the forms report an error instead of sending; without both
+  // Turnstile keys the forms rely on the honeypot alone.
   env: {
     schema: {
       RESEND_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),

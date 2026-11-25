@@ -1,0 +1,459 @@
+---
+// Join Our Team page: open roles, the application form and the Scout form. Rendered on demand (a
+// Vercel Function) so both forms work without JavaScript, exactly like /contact: they post back
+// here with ?form=<id>, errors re-render with the typed values kept, and success redirects to
+// ?sent=<id>. With JavaScript, src/scripts/forms.ts submits to /api/<id> instead.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
+import FormField from '../components/FormField.astro';
+import TurnstileScript from '../components/TurnstileScript.astro';
+import { handlePagePost, idleForm, sentForm } from '../lib/forms';
+import { openRoles, roleOptions } from '../lib/roles';
+
+export const prerender = false;
+
+const states = { application: idleForm('application'), scout: idleForm('scout') };
+/** Section each form lives in, so no-JS visitors land back on the right one. */
+const anchors = { application: 'apply', scout: 'scout' };
+type JoinForm = keyof typeof states;
+const isJoinForm = (id: string | null): id is JoinForm => id === 'application' || id === 'scout';
+
+if (Astro.request.method === 'POST') {
+  const id = Astro.url.searchParams.get('form');
+  if (isJoinForm(id)) {
+    const result = await handlePagePost(id, Astro);
+    if (result.ok) return Astro.redirect(`/join-our-team?sent=${id}#${anchors[id]}`, 303);
+    states[id] = result.state;
+    Astro.response.status = result.http;
+  } else {
+    Astro.response.status = 400;
+  }
+} else {
+  const sent = Astro.url.searchParams.get('sent');
+  if (isJoinForm(sent)) states[sent] = sentForm(sent);
+}
+
+const roles = await openRoles();
+const roleChoices = await roleOptions();
+const typeLabels = { 'full-time': 'Full-time', 'part-time': 'Part-time', contract: 'Contract', internship: 'Internship' };
+
+const application = { form: 'application', state: states.application } as const;
+const scout = { form: 'scout', state: states.scout } as const;
+---
+
+<BaseLayout
+  title="Join Our Team"
+  description="Join NPG Tech Solutions. See open roles, submit a general expression of interest, or enquire about becoming a Business Opportunity Scout."
+>
+  <!-- ============ PAGE INTRO ============ -->
+  <section class="page-hero" aria-labelledby="page-title" data-island-label="Join Our Team">
+    <div class="page-hero__bg" aria-hidden="true"><span class="page-hero__grid"></span></div>
+    <div class="container page-hero__copy">
+      <p class="eyebrow" data-reveal="up">Join us</p>
+      <h1 id="page-title" class="h-display" data-split>Join Our Team</h1>
+      <p class="lead" data-reveal="up">
+        NPG is developing a collaborative network of people who are interested in applying their skills to practical
+        technology projects. Open roles are listed on this page as they become available, and we also welcome general
+        expressions of interest from people who value responsibility, teamwork, learning and delivery.
+      </p>
+      <div class="hero-links" data-reveal="up">
+        <a href="#apply" class="btn">
+          Apply to Join Our Team <span class="btn__arrow" aria-hidden="true">→</span>
+        </a>
+        <a href="#scout" class="hero-links__scout">Enquire About Becoming a Business Opportunity Scout</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHO MAY EXPRESS INTEREST ============ -->
+  <section class="section section--tight" aria-labelledby="who-title" data-island-label="Who may express interest">
+    <div class="container">
+      <div class="split">
+        <h2 id="who-title" class="h-section" data-split>Who may express interest</h2>
+        <p class="split__copy" data-reveal="up">
+          People with relevant technical, creative, operational, research, communication or business-support skills may
+          express interest. Participation is based on project needs, suitability, availability and the terms agreed for
+          each opportunity.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OPEN ROLES ============ -->
+  <section class="section section--surface" id="roles" aria-labelledby="roles-title" data-island-label="Open roles">
+    <div class="container">
+      <div class="section-head">
+        <h2 id="roles-title" class="h-section" data-split>Open roles</h2>
+      </div>
+      {
+        roles.length > 0 ? (
+          <ul role="list" class="roles">
+            {roles.map(({ id, data: role }) => (
+              <li class="role">
+                <div class="role__head">
+                  <h3 class="role__title" id={`role-${id}`}>
+                    {role.title}
+                  </h3>
+                  <ul role="list" class="role__meta" aria-label="Role details">
+                    <li>{typeLabels[role.type]}</li>
+                    <li>{role.location}</li>
+                  </ul>
+                </div>
+                <p class="role__summary">{role.summary}</p>
+                {(role.responsibilities.length > 0 || role.requirements.length > 0) && (
+                  <div class="role__lists">
+                    {role.responsibilities.length > 0 && (
+                      <div>
+                        <h4 class="role__label">Responsibilities</h4>
+                        <ul class="role__list">
+                          {role.responsibilities.map((r) => (
+                            <li>{r}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {role.requirements.length > 0 && (
+                      <div>
+                        <h4 class="role__label">Requirements</h4>
+                        <ul class="role__list">
+                          {role.requirements.map((r) => (
+                            <li>{r}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div class="roles-empty">
+            <p class="roles-empty__title">There are no open roles at the moment.</p>
+            <p>You are welcome to submit a general expression of interest instead.</p>
+          </div>
+        )
+      }
+      <p class="roles__cta">
+        <a href="#apply" class="btn">
+          Apply to Join Our Team <span class="btn__arrow" aria-hidden="true">→</span>
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ HOW JOINING WORKS + CLARIFICATION ============ -->
+  <section class="section" aria-labelledby="how-title" data-island-label="How joining works">
+    <div class="container joining">
+      <div class="split">
+        <h2 id="how-title" class="h-section" data-split>How joining works</h2>
+        <p class="split__copy" data-reveal="up">
+          When a suitable project or internal initiative becomes available, NPG may identify contributors whose
+          capabilities match the requirements. Roles, responsibilities, timelines, compensation (where applicable),
+          ownership and other terms are discussed and agreed before work begins.
+        </p>
+      </div>
+      <!-- Legal protection: no motion on it, so it is always visible. -->
+      <div class="clarification" role="note" aria-labelledby="clarification-title">
+        <span class="clarification__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 7v6M12 16.5v.5"></path>
+          </svg>
+        </span>
+        <div class="clarification__body">
+          <h2 id="clarification-title" class="clarification__title">Important clarification</h2>
+          <p>
+            Submitting an expression of interest does not create employment, guarantee project placement, guarantee
+            income or establish participation in a specific project. Each engagement is subject to review and a separate
+            agreement where required.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ APPLICATION FORM ============ -->
+  <section class="section section--flush" id="apply" aria-labelledby="application-title" data-island-label="Apply">
+    <div class="container form-wrap">
+      <EnquiryForm
+        form="application"
+        state={states.application}
+        title="Apply to Join Our Team"
+        action="/join-our-team?form=application#apply"
+        submitLabel="Submit Application"
+        privacy="The information you submit will be used to review and respond to your application."
+      >
+        <div class="form__row">
+          <FormField {...application} name="name" label="Full Name" autocomplete="name" />
+          <FormField {...application} name="email" label="Email Address" type="email" autocomplete="email" />
+        </div>
+        <div class="form__row">
+          <FormField {...application} name="phone" label="Phone Number" type="tel" autocomplete="tel" />
+          <FormField
+            {...application}
+            name="role"
+            label="Role Applied For"
+            options={roleChoices}
+            placeholder={roleChoices.length > 1 ? 'Choose a role' : undefined}
+          />
+        </div>
+        <FormField {...application} name="skills" label="Skills and Experience" rows={6} />
+        <FormField
+          {...application}
+          name="link"
+          label="Portfolio, GitHub or LinkedIn Link"
+          type="url"
+          hint="There is no CV upload. Applications are emailed to us and not stored, so please share a link instead."
+        />
+        <FormField {...application} name="availability" label="Availability" placeholder="Choose your availability" />
+        <FormField {...application} name="why" label="Why Do You Want to Join NPG?" rows={6} />
+      </EnquiryForm>
+    </div>
+  </section>
+
+  <!-- ============ BUSINESS OPPORTUNITY SCOUT ============ -->
+  <section class="section section--surface" id="scout" aria-labelledby="scout-heading" data-island-label="Opportunity Scout">
+    <div class="container scout">
+      <div class="scout__copy">
+        <h2 id="scout-heading" class="h-section" data-split>Business Opportunity Scout</h2>
+        <p>
+          Know a business or organisation that may need technology support? NPG may engage Business Opportunity Scouts to
+          identify and refer potential business opportunities. Scout participation and commission eligibility are governed
+          by a separate written engagement agreement. A referral does not authorise a Scout to negotiate final prices,
+          sign agreements, collect client payments or make delivery promises on behalf of NPG.
+        </p>
+      </div>
+      <EnquiryForm
+        form="scout"
+        state={states.scout}
+        title="Enquire About Becoming a Business Opportunity Scout"
+        level="h3"
+        action="/join-our-team?form=scout#scout"
+        submitLabel="Send Enquiry"
+        privacy="The information you submit will be used to review and respond to your enquiry."
+      >
+        <FormField {...scout} name="name" label="Full Name" autocomplete="name" />
+        <div class="form__row">
+          <FormField {...scout} name="email" label="Email Address" type="email" autocomplete="email" />
+          <FormField {...scout} name="phone" label="Phone Number" type="tel" autocomplete="tel" />
+        </div>
+        <FormField {...scout} name="about" label="Tell Us About Yourself and the Opportunities You Could Refer" rows={6} />
+      </EnquiryForm>
+    </div>
+  </section>
+
+  <TurnstileScript />
+</BaseLayout>
+
+<style>
+  .section--tight {
+    padding-top: var(--space-8);
+  }
+  .hero-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4) var(--space-6);
+  }
+  .hero-links__scout {
+    padding-block: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: 700;
+  }
+  .section--flush {
+    padding-top: 0;
+  }
+
+  /* ---------- Heading left, copy right ----------
+     Same pattern as How we operate on About. */
+  .split {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 64rem;
+  }
+  @media (min-width: 48rem) {
+    .split {
+      grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+      column-gap: var(--space-8);
+      align-items: start;
+    }
+  }
+  .split__copy {
+    max-width: 44rem;
+    font-size: var(--text-lg);
+    line-height: 1.7;
+    color: var(--color-text);
+  }
+
+  /* ---------- Open roles ---------- */
+  .roles {
+    display: grid;
+    gap: var(--space-6);
+  }
+  .role,
+  .roles-empty {
+    display: grid;
+    gap: var(--space-4);
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background: var(--color-card);
+    box-shadow: var(--shadow-sm);
+  }
+  .role__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-6);
+  }
+  .role__title {
+    font-size: var(--text-xl);
+    color: var(--color-heading);
+    overflow-wrap: anywhere;
+  }
+  .role__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .role__meta li {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    background: var(--color-chip-bg);
+    color: var(--color-chip-fg);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+  .role__summary {
+    max-width: 46rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+  }
+  .role__lists {
+    display: grid;
+    gap: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line);
+  }
+  @media (min-width: 48rem) {
+    .role__lists {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-8);
+    }
+  }
+  .role__label {
+    margin-bottom: var(--space-3);
+    font-size: var(--text-sm);
+    letter-spacing: 0;
+    color: var(--color-heading);
+  }
+  .role__list {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: 1.2rem;
+    color: var(--color-muted);
+  }
+  .role__list li::marker {
+    color: var(--color-accent);
+  }
+  .roles-empty {
+    gap: var(--space-2);
+    border: 2px dashed color-mix(in oklab, var(--color-muted) 45%, transparent);
+    box-shadow: none;
+    color: var(--color-muted);
+  }
+  .roles-empty__title {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-heading);
+  }
+  .roles__cta {
+    margin-top: var(--space-8);
+  }
+
+  /* ---------- Important clarification ---------- */
+  .joining {
+    display: grid;
+    gap: var(--space-12);
+  }
+  .clarification {
+    display: grid;
+    gap: var(--space-4);
+    padding: clamp(1.5rem, 1rem + 2.5vw, 2.5rem);
+    border: 2px solid #b26a00;
+    border-left-width: 8px;
+    border-radius: var(--radius);
+    background: #fff6e5;
+    color: var(--color-ink);
+  }
+  @media (min-width: 48rem) {
+    .clarification {
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: var(--space-6);
+    }
+  }
+  .clarification__icon {
+    color: #b26a00;
+  }
+  .clarification__body {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .clarification__title {
+    font-size: var(--text-xl);
+    font-weight: 800;
+    color: var(--color-ink);
+  }
+  .clarification p {
+    max-width: 52rem;
+    font-size: var(--text-lg);
+    font-weight: 600;
+    line-height: 1.6;
+  }
+  :global([data-theme='dark']) .clarification {
+    border-color: #ffb020;
+    background: rgb(255 176 32 / 0.1);
+    color: #ffe9c2;
+  }
+  :global([data-theme='dark']) .clarification__icon {
+    color: #ffb020;
+  }
+  :global([data-theme='dark']) .clarification__title {
+    color: var(--color-white);
+  }
+
+  /* ---------- Forms ---------- */
+  .form-wrap {
+    max-width: 56rem;
+  }
+  .form-wrap :global(.form-card__title) {
+    font-size: var(--text-2xl);
+    font-weight: 800;
+  }
+
+  /* Scout: copy, then the form. From 56rem: copy on the left, form on the right. */
+  .scout {
+    display: grid;
+    gap: var(--space-8);
+    align-items: start;
+  }
+  .scout__copy {
+    display: grid;
+    gap: var(--space-4);
+    font-size: var(--text-lg);
+    line-height: 1.7;
+  }
+  @media (min-width: 56rem) {
+    .scout {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+      gap: var(--space-12);
+    }
+    .scout__copy {
+      position: sticky;
+      top: calc(var(--island-space) + var(--space-4));
+    }
+  }
+</style>

@@ -74,7 +74,9 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
           <a href={ctaLinks.request.href} class="btn" aria-current={isCurrent(ctaLinks.request.href) ? 'page' : undefined}>
             {ctaLinks.request.label} <span class="btn__arrow" aria-hidden="true">→</span>
           </a>
-          <a href={ctaLinks.join.href} class="island__join">{ctaLinks.join.label}</a>
+          <a href={ctaLinks.join.href} class="island__join" aria-current={isCurrent(ctaLinks.join.href) ? 'page' : undefined}>
+            {ctaLinks.join.label}
+          </a>
         </div>
       </div>
     </div>
@@ -411,6 +413,12 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     color: var(--color-blue-200);
     font-weight: 700;
     font-size: var(--text-sm);
+  }
+  .island__join[aria-current='page'] {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 0.08);
+    text-decoration: none;
   }
 
   /* Buttons on the dark island: sweep to white */

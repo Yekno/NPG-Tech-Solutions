@@ -1,0 +1,88 @@
+---
+// A complete form card: title, status message, fields (slot), honeypot, optional Turnstile,
+// submit button and privacy note. Every form on the site uses this, so they all behave the same.
+// Pages using it must set `prerender = false`, handle their own POST (see src/lib/forms.ts) and
+// include <TurnstileScript /> once.
+//
+// Keep data-reveal off everything in here: content shown after load must not wait for the
+// reveal observer.
+import '../styles/forms.css';
+import { contact } from '../data/site';
+import { FORMS, type FormId } from '../lib/form-rules';
+import { turnstileSiteKey, type FormState } from '../lib/forms';
+
+interface Props {
+  form: FormId;
+  state: FormState;
+  title: string;
+  /** Heading level of the title. */
+  level?: 'h2' | 'h3';
+  /** Where the plain (no-JS) form posts. */
+  action: string;
+  submitLabel: string;
+  /** First sentence of the privacy note. */
+  privacy: string;
+}
+
+const { form, state, title, level: Title = 'h2', action, submitLabel, privacy } = Astro.props;
+const { messages, honeypot } = FORMS[form];
+const siteKey = turnstileSiteKey();
+---
+
+<div class="form-card">
+  <Title id={`${form}-title`} class="form-card__title">{title}</Title>
+
+  <div
+    id={`${form}-status`}
+    class:list={['form-status', state.status !== 'idle' && `form-status--${state.status}`]}
+    role="status"
+    aria-live="polite"
+    tabindex="-1"
+    hidden={state.status === 'idle'}
+  >
+    {state.status === 'idle' ? '' : messages[state.status]}
+  </div>
+
+  <form class="form" method="POST" action={action} aria-labelledby={`${form}-title`} data-form={form}>
+    <p class="form__note"><span aria-hidden="true">*</span> Required field</p>
+
+    <slot />
+
+    <!-- Honeypot: hidden with CSS (not type="hidden"), skipped by keyboard and screen readers.
+         Real people never fill it; if it arrives filled, the server reports success and sends nothing. -->
+    <div class="hp" aria-hidden="true">
+      <label for={`${form}-hp`}>Leave this field empty</label>
+      <input id={`${form}-hp`} type="text" name={honeypot} tabindex="-1" autocomplete="off" />
+    </div>
+
+    {
+      siteKey && (
+        <>
+          <div class="cf-turnstile" data-sitekey={siteKey} data-theme="auto" />
+          <noscript>
+            <p class="form__noscript">
+              Our spam check needs JavaScript. If you can't enable it, email us at{' '}
+              <a href={`mailto:${contact.email}`}>{contact.email}</a> or call{' '}
+              <a href={`tel:${contact.tel}`}>{contact.phone}</a>.
+            </p>
+          </noscript>
+        </>
+      )
+    }
+
+    <div class="form__actions">
+      <button type="submit" class="btn">
+        <span class="form__label">{submitLabel}</span> <span class="btn__arrow" aria-hidden="true">→</span>
+      </button>
+    </div>
+  </form>
+
+  <p class="form__privacy">
+    {privacy} Do not submit passwords, payment card details or other sensitive personal information through this form.{' '}
+    <a href="/privacy">Privacy Notice</a>
+  </p>
+</div>
+
+<script>
+  import '../scripts/forms';
+</script>

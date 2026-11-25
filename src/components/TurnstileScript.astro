@@ -1,0 +1,6 @@
+---
+// Cloudflare Turnstile loader: include once per page that has forms, however many it has.
+import { turnstileSiteKey } from '../lib/forms';
+---
+
+{turnstileSiteKey() && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
