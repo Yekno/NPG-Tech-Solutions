@@ -81,7 +81,16 @@ const field = { form: 'contact', state } as const;
           <FormField {...field} name="email" label="Email Address" type="email" autocomplete="email" />
         </div>
         <div class="form__row">
-          <FormField {...field} name="phone" label="Phone Number" type="tel" autocomplete="tel" optional="Optional, recommended" />
+          <FormField
+            {...field}
+            name="phone"
+            label="Phone / WhatsApp Number"
+            type="tel"
+            autocomplete="tel"
+            placeholder="+234 801 234 5678"
+            optional="Recommended"
+            hint="Include your WhatsApp number if you'd prefer we reach you there."
+          />
           <FormField {...field} name="organisation" label="Organisation / Business Name" autocomplete="organization" />
         </div>
         <div class="form__row">

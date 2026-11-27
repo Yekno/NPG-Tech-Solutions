@@ -45,7 +45,7 @@ const person: Record<'name' | 'email', FieldRule> = {
   name: { label: 'Full name', max: 120, required: 'Enter your full name.' },
   email: { label: 'Email', max: 254, required: 'Enter your email address.', format: 'email' },
 };
-const requiredPhone: FieldRule = { label: 'Phone', max: 40, required: 'Enter your phone number.' };
+const requiredPhone: FieldRule = { label: 'Phone / WhatsApp', max: 40, required: 'Enter your phone number.' };
 
 // Client and Scout enquiries are promised a reply. Applications are not: the page says placement
 // isn't guaranteed, so the application form has its own success message.
@@ -64,7 +64,7 @@ export const FORMS: Record<FormId, FormDef> = {
     messages: { success: ENQUIRY_SUCCESS, error: errorMessage('enquiry') },
     fields: {
       ...person,
-      phone: { label: 'Phone', max: 40 },
+      phone: { label: 'Phone / WhatsApp', max: 40 },
       organisation: { label: 'Organisation', max: 160 },
       enquiryType: { label: 'Enquiry type', max: 60, required: 'Choose an enquiry type.', options: ENQUIRY_TYPES },
       subject: { label: 'Subject', max: 160 },

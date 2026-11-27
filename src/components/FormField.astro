@@ -17,7 +17,8 @@ interface Props {
   rows?: number;
   /** Renders a dropdown; defaults to the options in the form rules. */
   options?: readonly string[];
-  /** First, empty dropdown option. Left out when there is only one thing to choose. */
+  /** Dropdowns: the first, empty option (left out when there is only one thing to choose).
+   *  Inputs: an example value shown in the empty field. Never a replacement for the label. */
   placeholder?: string;
   /** Permanent help text, announced with the field. */
   hint?: string;
@@ -71,7 +72,7 @@ const attrs = {
     ) : rows ? (
       <textarea {...attrs} rows={rows} maxlength={rule.max} set:text={value} />
     ) : (
-      <input {...attrs} type={type} autocomplete={autocomplete} maxlength={rule.max} value={value} />
+      <input {...attrs} type={type} autocomplete={autocomplete} maxlength={rule.max} placeholder={placeholder} value={value} />
     )
   }
   <p class="field__error" id={`${id}-error`} hidden={!error}>{error}</p>
