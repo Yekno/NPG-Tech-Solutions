@@ -40,36 +40,34 @@ const field = { form: 'contact', state } as const;
         Have a project in mind, a technical challenge to discuss or a potential partnership opportunity? Get in touch.
         Share a few details and the appropriate person at NPG will review your enquiry.
       </p>
+      <!-- Contact details close the intro (like the jump links on /services). Real links, and no
+           data-reveal, so they never depend on JavaScript. -->
+      <h2 id="details-title" class="visually-hidden">Contact details</h2>
+      <dl class="details" aria-labelledby="details-title">
+        <div class="details__item">
+          <dt>Email</dt>
+          <dd><a href={`mailto:${contact.email}`}>{contact.email}</a></dd>
+        </div>
+        <div class="details__item">
+          <dt>Telephone / WhatsApp</dt>
+          <dd>
+            <a href={`tel:${contact.tel}`}>{contact.phone}</a>
+            <a href={contact.whatsapp} class="details__wa" target="_blank" rel="noopener noreferrer">
+              Message on WhatsApp <span class="visually-hidden">(opens in a new tab)</span><span aria-hidden="true">↗</span>
+            </a>
+          </dd>
+        </div>
+        <div class="details__item">
+          <dt>Operating location</dt>
+          <dd>{contact.location}</dd>
+        </div>
+      </dl>
     </div>
   </section>
 
-  <!-- ============ DETAILS + FORM ============ -->
-  <section class="section contact" id="enquiry" aria-label="Contact details and enquiry form" data-island-label="Send an enquiry">
-    <div class="container contact__grid">
-      <!-- Contact details: real links. No data-reveal, so they never depend on JS. -->
-      <aside class="details" aria-labelledby="details-title">
-        <h2 id="details-title" class="details__title">Contact details</h2>
-        <dl class="details__list">
-          <div class="details__item">
-            <dt>Email</dt>
-            <dd><a href={`mailto:${contact.email}`}>{contact.email}</a></dd>
-          </div>
-          <div class="details__item">
-            <dt>Telephone / WhatsApp</dt>
-            <dd>
-              <a href={`tel:${contact.tel}`}>{contact.phone}</a>
-              <a href={contact.whatsapp} class="details__wa" target="_blank" rel="noopener noreferrer">
-                Message on WhatsApp <span class="visually-hidden">(opens in a new tab)</span><span aria-hidden="true">↗</span>
-              </a>
-            </dd>
-          </div>
-          <div class="details__item">
-            <dt>Operating location</dt>
-            <dd>{contact.location}</dd>
-          </div>
-        </dl>
-      </aside>
-
+  <!-- ============ FORM ============ -->
+  <section class="section contact" id="enquiry" aria-label="Enquiry form" data-island-label="Send an enquiry">
+    <div class="container">
       <EnquiryForm
         form="contact"
         state={state}
@@ -106,43 +104,42 @@ const field = { form: 'contact', state } as const;
 </BaseLayout>
 
 <style>
-  /* ---------- Layout ----------
-     Phones and tablets: details, then the form. From 56rem: details on the left, form on the right. */
-  .contact__grid {
-    display: grid;
-    gap: var(--space-8);
-    align-items: start;
-  }
-  @media (min-width: 56rem) {
-    .contact__grid {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-      gap: var(--space-12);
-    }
-    .details {
-      position: sticky;
-      top: calc(var(--island-space) + var(--space-4));
-    }
-  }
-
-  /* ---------- Contact details ---------- */
+  /* ---------- Contact details (in the intro) ----------
+     Three cards in the same treatment as the jump links on /services: stacked on phones; on
+     tablets the email (the longest value) takes its own row so it never breaks mid-address;
+     one row of three from 64rem. */
   .details {
     display: grid;
-    gap: var(--space-6);
-  }
-  .details__title {
-    font-size: var(--text-xl);
-    color: var(--color-heading);
-  }
-  .details__list {
-    display: grid;
-    gap: var(--space-6);
+    gap: var(--space-3);
+    width: min(100%, 60rem);
     margin: 0;
+  }
+  @media (min-width: 40rem) {
+    .details {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+    .details__item:first-child {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (min-width: 64rem) {
+    .details {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .details__item:first-child {
+      grid-column: auto;
+    }
   }
   .details__item {
     display: grid;
+    align-content: start;
     gap: var(--space-1);
-    padding-left: var(--space-4);
-    border-left: 3px solid var(--color-blue);
+    padding: var(--space-4) var(--space-6);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    background: var(--color-card);
+    box-shadow: var(--shadow-sm);
   }
   .details__item dt {
     font-size: var(--text-xs);
@@ -153,7 +150,7 @@ const field = { form: 'contact', state } as const;
   }
   .details__item dd {
     display: grid;
-    justify-items: start;
+    justify-items: center;
     gap: var(--space-1);
     margin: 0;
     font-weight: 600;
@@ -168,8 +165,13 @@ const field = { form: 'contact', state } as const;
   }
   .details__item dd .details__wa {
     font-size: var(--text-sm);
-    font-weight: 600;
     color: var(--color-accent);
+  }
+
+  /* ---------- Form ----------
+     Full content width, sitting close under the intro so the page reads as one flow. */
+  .contact {
+    padding-top: var(--space-4);
   }
 
   /* ---------- Join Our Team note ----------
