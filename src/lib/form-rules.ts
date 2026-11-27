@@ -27,7 +27,11 @@ export interface FieldRule {
   max: number;
   /** Error shown when the field is empty; its presence makes the field required. */
   required?: string;
-  format?: 'email' | 'url';
+  format?: 'email' | 'url' | 'phone';
+  /** Value used when the field is empty or missing (the country code defaults to Nigeria). */
+  default?: string;
+  /** Left out of the email (the country code is folded into the phone number). */
+  inEmail?: false;
   /** Fixed dropdown options. */
   options?: readonly string[];
   /** Long text: goes in its own block at the end of the email. */
@@ -45,7 +49,12 @@ const person: Record<'name' | 'email', FieldRule> = {
   name: { label: 'Full name', max: 120, required: 'Enter your full name.' },
   email: { label: 'Email', max: 254, required: 'Enter your email address.', format: 'email' },
 };
-const requiredPhone: FieldRule = { label: 'Phone / WhatsApp', max: 40, required: 'Enter your phone number.' };
+// Phone: a country code dropdown plus the number. Its options (every country) come from
+// countryOptions() in src/lib/phone.ts, which is server only; the server checks them.
+const phoneCountry: FieldRule = { label: 'Country code', max: 2, default: 'NG', inEmail: false };
+const optionalPhone: FieldRule = { label: 'Phone / WhatsApp', max: 40, format: 'phone' };
+const requiredPhone: FieldRule = { ...optionalPhone, required: 'Enter your phone number.' };
+export const PHONE_INVALID = 'Enter a valid phone number for the country selected.';
 
 // Client and Scout enquiries are promised a reply. Applications are not: the page says placement
 // isn't guaranteed, so the application form has its own success message.
@@ -64,7 +73,8 @@ export const FORMS: Record<FormId, FormDef> = {
     messages: { success: ENQUIRY_SUCCESS, error: errorMessage('enquiry') },
     fields: {
       ...person,
-      phone: { label: 'Phone / WhatsApp', max: 40 },
+      phoneCountry,
+      phone: optionalPhone,
       organisation: { label: 'Organisation', max: 160 },
       enquiryType: { label: 'Enquiry type', max: 60, required: 'Choose an enquiry type.', options: ENQUIRY_TYPES },
       subject: { label: 'Subject', max: 160 },
@@ -76,6 +86,7 @@ export const FORMS: Record<FormId, FormDef> = {
     messages: { success: APPLICATION_SUCCESS, error: errorMessage('application') },
     fields: {
       ...person,
+      phoneCountry,
       phone: requiredPhone,
       // Options are the open roles plus GENERAL_INTEREST: see roleOptions() in src/lib/roles.ts.
       role: { label: 'Role applied for', max: 160, required: 'Choose a role.' },
@@ -100,6 +111,7 @@ export const FORMS: Record<FormId, FormDef> = {
     messages: { success: ENQUIRY_SUCCESS, error: errorMessage('enquiry') },
     fields: {
       ...person,
+      phoneCountry,
       phone: requiredPhone,
       about: {
         label: 'About them and the opportunities they could refer',
@@ -123,14 +135,33 @@ const isWebLink = (s: string) => {
   }
 };
 
+/**
+ * Light phone check for instant feedback in the browser. The server then checks the number
+ * properly for the selected country (libphonenumber-js, see src/lib/phone.ts).
+ * Nigeria: drop one leading 0; a mobile number (starting 7, 8 or 9) must then be exactly 10 digits.
+ * Anything else, and every other country: 7 to 15 digits. A number typed with its own +code is
+ * left to the server.
+ */
+export function plausiblePhone(country: string, value: string): boolean {
+  const plus = value.trim().startsWith('+');
+  let digits = value.replace(/[\s\-()]/g, '').replace(/^\+/, '');
+  if (!/^\d+$/.test(digits)) return false;
+  if (country === 'NG' && !plus) {
+    digits = digits.replace(/^0/, '');
+    if (/^[789]/.test(digits)) return digits.length === 10;
+  }
+  return digits.length >= 7 && digits.length <= 15;
+}
+
 export const emptyValues = (id: FormId): Values =>
-  Object.fromEntries(Object.keys(FORMS[id].fields).map((name) => [name, '']));
+  Object.fromEntries(Object.entries(FORMS[id].fields).map(([name, rule]) => [name, rule.default ?? '']));
 
 export function readValues(id: FormId, form: FormData): Values {
   const values = emptyValues(id);
   for (const name of Object.keys(values)) {
     const raw = form.get(name);
-    values[name] = typeof raw === 'string' ? raw.trim() : '';
+    const value = typeof raw === 'string' ? raw.trim() : '';
+    if (value) values[name] = value;
   }
   return values;
 }
@@ -146,6 +177,8 @@ export function validate(id: FormId, v: Values, dynamic: Options = {}): Errors {
       errors[name] = rule.required ?? 'Choose one of the options.';
     } else if (rule.format === 'email' && !EMAIL_RE.test(value)) {
       errors[name] = 'Enter a valid email address, like name@example.com.';
+    } else if (rule.format === 'phone' && !plausiblePhone(v.phoneCountry, value)) {
+      errors[name] = PHONE_INVALID;
     } else if (rule.format === 'url' && !isWebLink(value)) {
       errors[name] = 'Enter a full link, like https://example.com.';
     } else if (value.length > rule.max) {

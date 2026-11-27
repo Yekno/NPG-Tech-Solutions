@@ -75,6 +75,20 @@
     border-color var(--dur-fast),
     box-shadow var(--dur-fast);
 }
+/* Phone: country code dropdown and number. Stacked in narrow columns (phones, the half-width
+   rows on tablets and the Scout card), side by side when the field has room. */
+.phone {
+  container-type: inline-size;
+}
+.phone__row {
+  display: grid;
+  gap: var(--space-2);
+}
+@container (min-width: 22rem) {
+  .phone__row {
+    grid-template-columns: 11.5rem minmax(0, 1fr);
+  }
+}
 .field textarea {
   resize: vertical;
   min-height: 10rem;

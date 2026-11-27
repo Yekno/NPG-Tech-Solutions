@@ -11,7 +11,17 @@ import {
   TURNSTILE_SECRET_KEY,
 } from 'astro:env/server';
 import { contact, site } from '../data/site';
-import { FORMS, emptyValues, readValues, validate, type Errors, type FormId, type Values } from './form-rules';
+import {
+  FORMS,
+  PHONE_INVALID,
+  emptyValues,
+  readValues,
+  validate,
+  type Errors,
+  type FormId,
+  type Values,
+} from './form-rules';
+import { normalisePhone, phoneForEmail } from './phone';
 import { roleOptions } from './roles';
 
 /** Turnstile is on only when both keys are configured. */
@@ -51,12 +61,20 @@ const EMAILS: Record<FormId, { heading: string; subject: (v: Values) => string }
   },
 };
 
+/** One line per short field; the phone (already in international format) also gets a WhatsApp link. */
+function emailLines(label: string, value: string, format?: string): string[] {
+  if (!value) return [`${label}: (not given)`];
+  if (format !== 'phone') return [`${label}: ${oneLine(value)}`];
+  const { display, whatsapp } = phoneForEmail(value);
+  return [`${label}: ${display}`, `WhatsApp: ${whatsapp}`];
+}
+
 function emailText(id: FormId, v: Values): string {
-  const fields = Object.entries(FORMS[id].fields);
+  const fields = Object.entries(FORMS[id].fields).filter(([, f]) => f.inEmail !== false);
   return [
     EMAILS[id].heading,
     '',
-    ...fields.filter(([, f]) => !f.multiline).map(([name, f]) => `${f.label}: ${oneLine(v[name]) || '(not given)'}`),
+    ...fields.filter(([, f]) => !f.multiline).flatMap(([name, f]) => emailLines(f.label, v[name], f.format)),
     '',
     ...fields.filter(([, f]) => f.multiline).flatMap(([name, f]) => [`${f.label}:`, v[name], '']),
     '(Reply to this email to respond directly to the sender.)',
@@ -109,6 +127,19 @@ async function handleSubmission(id: FormId, form: FormData, ip: string | undefin
 
   // The role is checked against what is open right now, never against what the browser offered.
   const errors = validate(id, values, id === 'application' ? { role: await roleOptions() } : {});
+
+  // The browser's phone check is only a quick guide: this is the real one, for the chosen country.
+  // An invalid country code also lands here, since no number is valid for it.
+  if (errors.phoneCountry) {
+    delete errors.phoneCountry; // the dropdown has no error slot of its own
+    if (values.phone) errors.phone ??= PHONE_INVALID;
+  }
+  let phone = '';
+  if (values.phone && !errors.phone) {
+    phone = normalisePhone(values.phoneCountry, values.phone) ?? '';
+    if (!phone) errors.phone = PHONE_INVALID;
+  }
+  // Errors re-render with what was typed, not the normalised number.
   if (Object.keys(errors).length > 0) return { status: 'invalid', values, errors };
 
   if (turnstileSiteKey()) {
@@ -118,7 +149,7 @@ async function handleSubmission(id: FormId, form: FormData, ip: string | undefin
     }
   }
 
-  return (await send(id, values)) ? success : { status: 'failed', values, errors: {} };
+  return (await send(id, { ...values, phone })) ? success : { status: 'failed', values, errors: {} };
 }
 
 /** Anything with the request and (where the platform provides it) the visitor's address. */

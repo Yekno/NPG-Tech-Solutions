@@ -61,6 +61,14 @@ function enhance(form: HTMLFormElement) {
     }
   });
 
+  // Phone: check as soon as the visitor leaves the number (once something is typed), and again
+  // if they change the country code after typing it.
+  const checkPhone = () => {
+    if (fieldEl('phone')?.value.trim()) setError('phone', validate(id, readValues(id, new FormData(form))).phone);
+  };
+  fieldEl('phone')?.addEventListener('blur', checkPhone);
+  fieldEl('phoneCountry')?.addEventListener('change', checkPhone);
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const data = new FormData(form);

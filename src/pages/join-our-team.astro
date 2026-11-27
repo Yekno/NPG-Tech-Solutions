@@ -189,7 +189,7 @@ const scout = { form: 'scout', state: states.scout } as const;
           <FormField {...application} name="email" label="Email Address" type="email" autocomplete="email" />
         </div>
         <div class="form__row">
-          <FormField {...application} name="phone" label="Phone / WhatsApp Number" type="tel" autocomplete="tel" placeholder="+234 801 234 5678" />
+          <FormField {...application} name="phone" label="Phone / WhatsApp Number" placeholder="0801 234 5678" />
           <FormField
             {...application}
             name="role"
@@ -236,7 +236,7 @@ const scout = { form: 'scout', state: states.scout } as const;
         <FormField {...scout} name="name" label="Full Name" autocomplete="name" />
         <div class="form__row">
           <FormField {...scout} name="email" label="Email Address" type="email" autocomplete="email" />
-          <FormField {...scout} name="phone" label="Phone / WhatsApp Number" type="tel" autocomplete="tel" placeholder="+234 801 234 5678" />
+          <FormField {...scout} name="phone" label="Phone / WhatsApp Number" placeholder="0801 234 5678" />
         </div>
         <FormField {...scout} name="about" label="Tell Us About Yourself and the Opportunities You Could Refer" rows={6} />
       </EnquiryForm>
