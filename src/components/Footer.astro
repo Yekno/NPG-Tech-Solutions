@@ -11,12 +11,15 @@ export interface FooterCta {
 
 interface Props {
   cta?: FooterCta;
+  /** Set to false on pages where the closing CTA doesn't fit (e.g. the form pages). */
+  showCta?: boolean;
 }
 
 // Pages can pass their own closing CTA; otherwise the site-wide one is used.
 const {
+  showCta = true,
   cta = {
-    title: 'Have a problem you want technology to solve?',
+    title: 'Have a business challenge you want solved?',
     text: 'Tell us what you are trying to achieve. We would be glad to understand your needs and discuss a practical way forward.',
     link: ctaLinks.conversation,
   },
@@ -26,16 +29,20 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const year = new Date().getFullYear();
 ---
 
-<footer class="site-footer">
+<footer class:list={['site-footer', { 'site-footer--no-cta': !showCta }]}>
   <div class="site-footer__glow" aria-hidden="true"></div>
   <div class="container">
-    <div class="site-footer__cta" data-reveal="up">
-      <h2 class="site-footer__title">{cta.title}</h2>
-      <p>{cta.text}</p>
-      <a href={cta.link.href} class="btn" data-magnetic>
-        {cta.link.label} <span class="btn__arrow" aria-hidden="true">→</span>
-      </a>
-    </div>
+    {
+      showCta && (
+        <div class="site-footer__cta" data-reveal="up">
+          <h2 class="site-footer__title">{cta.title}</h2>
+          <p>{cta.text}</p>
+          <a href={cta.link.href} class="btn" data-magnetic>
+            {cta.link.label} <span class="btn__arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      )
+    }
 
     <div class="site-footer__grid">
       <div class="site-footer__brand">
@@ -123,6 +130,14 @@ const year = new Date().getFullYear();
         var(--color-navy-900) calc(var(--fade) * 1)
       );
     }
+  }
+  /* Without the closing CTA the links follow the fade directly, so drop the spacing
+     that normally sits around the CTA block. */
+  .site-footer--no-cta {
+    padding-top: var(--fade);
+  }
+  .site-footer--no-cta .site-footer__grid {
+    padding-top: var(--space-8);
   }
   .site-footer__glow {
     position: absolute;

@@ -10,9 +10,11 @@ interface Props {
   description?: string;
   /** Closing call to action shown at the top of the footer; defaults to the site-wide one. */
   cta?: FooterCta;
+  /** Set to false to hide the closing call to action. */
+  showCta?: boolean;
 }
 
-const { title, description = site.description, cta } = Astro.props;
+const { title, description = site.description, cta, showCta = true } = Astro.props;
 const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -63,7 +65,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    <Footer cta={cta} />
+    <Footer cta={cta} showCta={showCta} />
     <script>
       import '../scripts/motion';
     </script>
