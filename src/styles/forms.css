@@ -145,6 +145,11 @@
   font-weight: 600;
   line-height: 1.6;
 }
+/* Links in a status message (the send-failure contact links) match the message's colour. */
+.form-status a {
+  color: inherit;
+  text-decoration: underline;
+}
 .form-status[hidden] {
   display: none;
 }

@@ -27,6 +27,8 @@ interface Props {
 const { form, state, title, level: Title = 'h2', action, submitLabel, privacy } = Astro.props;
 const { messages, honeypot } = FORMS[form];
 const siteKey = turnstileSiteKey();
+const message = state.status === 'idle' ? [] : [messages[state.status]].flat();
+const tone = state.status === 'idle' ? null : state.status === 'success' ? 'success' : 'error';
 ---
 
 <div class="form-card">
@@ -34,13 +36,13 @@ const siteKey = turnstileSiteKey();
 
   <div
     id={`${form}-status`}
-    class:list={['form-status', state.status !== 'idle' && `form-status--${state.status}`]}
+    class:list={['form-status', tone && `form-status--${tone}`]}
     role="status"
     aria-live="polite"
     tabindex="-1"
-    hidden={state.status === 'idle'}
+    hidden={!tone}
   >
-    {state.status === 'idle' ? '' : messages[state.status]}
+    {message.map((part) => (typeof part === 'string' ? part : <a href={part.href}>{part.text}</a>))}
   </div>
 
   <form class="form" method="POST" action={action} aria-labelledby={`${form}-title`} data-form={form}>

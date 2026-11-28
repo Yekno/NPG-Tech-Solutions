@@ -1,7 +1,7 @@
 // Progressive enhancement for every form on the site (see EnquiryForm.astro). The forms already
 // work as plain POSTs. With JavaScript, validate inline with the same rules as the server, submit
 // via fetch to the form's JSON endpoint and show the result in place.
-import { FORMS, readValues, validate, type Errors, type FormId } from '../lib/form-rules';
+import { FORMS, readValues, validate, type Errors, type FailReason, type FormId } from '../lib/form-rules';
 
 declare global {
   interface Window {
@@ -41,9 +41,16 @@ function enhance(form: HTMLFormElement) {
 
   const showErrors = (errors: Errors) => fields.forEach((name) => setError(name, errors[name]));
 
-  const showStatus = (kind: 'success' | 'error') => {
-    status.textContent = def.messages[kind];
-    status.className = `form-status form-status--${kind}`;
+  const showStatus = (kind: 'success' | FailReason) => {
+    const parts = [def.messages[kind]].flat().map((part) => {
+      if (typeof part === 'string') return part;
+      const a = document.createElement('a');
+      a.href = part.href;
+      a.textContent = part.text;
+      return a;
+    });
+    status.replaceChildren(...parts);
+    status.className = `form-status form-status--${kind === 'success' ? 'success' : 'error'}`;
     status.hidden = false;
   };
 
@@ -75,7 +82,7 @@ function enhance(form: HTMLFormElement) {
     const errors = validate(id, readValues(id, data));
     showErrors(errors);
     if (Object.keys(errors).length > 0) {
-      showStatus('error');
+      showStatus('invalid');
       focusFirstInvalid(errors);
       return;
     }
@@ -85,20 +92,24 @@ function enhance(form: HTMLFormElement) {
     label.textContent = 'Sending…';
     try {
       const res = await fetch(`/api/${id}`, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
-      const json = (await res.json()) as { status: string; errors?: Errors };
+      const json = (await res.json()) as { status: string; reason?: FailReason; errors?: Errors };
       if (json.status === 'success') {
         form.reset();
         showErrors({});
         showStatus('success');
         status.focus();
       } else {
-        // Keep everything the user typed.
-        showErrors(json.errors ?? {});
-        showStatus('error');
-        focusFirstInvalid(json.errors ?? {});
+        // Keep everything the user typed. Only 'invalid' comes with field errors.
+        const reason = json.reason === 'invalid' ? 'invalid' : 'send';
+        const errs = reason === 'invalid' ? (json.errors ?? {}) : {};
+        showErrors(errs);
+        showStatus(reason);
+        focusFirstInvalid(errs);
       }
     } catch {
-      showStatus('error');
+      // Network error, or a response that wasn't our JSON: the fields were fine.
+      showErrors({});
+      showStatus('send');
       status.focus();
     } finally {
       button.disabled = false;

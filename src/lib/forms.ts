@@ -18,6 +18,7 @@ import {
   readValues,
   validate,
   type Errors,
+  type FailReason,
   type FormId,
   type Values,
 } from './form-rules';
@@ -111,7 +112,8 @@ async function send(id: FormId, v: Values): Promise<boolean> {
 }
 
 interface Result {
-  status: 'success' | 'invalid' | 'failed';
+  /** 'invalid': a field needs fixing (errors say which). 'send': the fields were fine but it didn't go. */
+  status: 'success' | FailReason;
   values: Values;
   errors: Errors;
 }
@@ -142,14 +144,16 @@ async function handleSubmission(id: FormId, form: FormData, ip: string | undefin
   // Errors re-render with what was typed, not the normalised number.
   if (Object.keys(errors).length > 0) return { status: 'invalid', values, errors };
 
+  // A failed spam check isn't something the visitor can fix in the fields (usually the token
+  // expired), so it gets the "try again" message rather than "check the highlighted fields".
   if (turnstileSiteKey()) {
     const token = form.get('cf-turnstile-response');
     if (!(await verifyTurnstile(typeof token === 'string' ? token : '', ip))) {
-      return { status: 'invalid', values, errors: {} };
+      return { status: 'send', values, errors: {} };
     }
   }
 
-  return (await send(id, { ...values, phone })) ? success : { status: 'failed', values, errors: {} };
+  return (await send(id, { ...values, phone })) ? success : { status: 'send', values, errors: {} };
 }
 
 /** Anything with the request and (where the platform provides it) the visitor's address. */
@@ -167,23 +171,24 @@ async function handleRequest(id: FormId, context: RequestContext): Promise<Resul
   return form ? handleSubmission(id, form, ip) : { status: 'invalid', values: emptyValues(id), errors: {} };
 }
 
-const HTTP_STATUS = { success: 200, invalid: 400, failed: 502 } as const;
+const HTTP_STATUS = { success: 200, invalid: 400, send: 502 } as const;
 
-/** JSON endpoint for the enhanced (JavaScript) version of a form. Used by src/pages/api/. */
+/**
+ * JSON endpoint for the enhanced (JavaScript) version of a form. Used by src/pages/api/.
+ * Responds { status: 'success' } or { status: 'error', reason: 'invalid' | 'send', errors }; the
+ * browser shows the matching message from form-rules.ts.
+ */
 export const formEndpoint =
   (id: FormId): APIRoute =>
   async (context) => {
     const { status, errors } = await handleRequest(id, context);
-    const { messages } = FORMS[id];
-    return Response.json(
-      { status, message: status === 'success' ? messages.success : messages.error, errors },
-      { status: HTTP_STATUS[status] },
-    );
+    const body = status === 'success' ? { status } : { status: 'error', reason: status, errors };
+    return Response.json(body, { status: HTTP_STATUS[status] });
   };
 
-/** What a page needs to render a form. */
+/** What a page needs to render a form. A failed submission's status is the reason it failed. */
 export interface FormState {
-  status: 'idle' | 'success' | 'error';
+  status: 'idle' | 'success' | FailReason;
   values: Values;
   errors: Errors;
 }
@@ -197,6 +202,7 @@ export const sentForm = (id: FormId): FormState => ({ ...idleForm(id), status: '
  */
 export async function handlePagePost(id: FormId, context: RequestContext) {
   const { status, values, errors } = await handleRequest(id, context);
-  const state: FormState = { status: 'error', values, errors };
+  // Keeps what was typed (country code included) for both kinds of failure.
+  const state: FormState = { status, values, errors };
   return { ok: status === 'success', http: HTTP_STATUS[status], state };
 }

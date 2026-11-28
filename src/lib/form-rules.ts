@@ -1,5 +1,6 @@
 // Rules for every form on the site, with no server-only imports, so the same validation runs in
 // the browser (instant inline errors) and on the server (the check that actually counts).
+import { contact } from '../data/site';
 
 export const ENQUIRY_TYPES = [
   'Project / Service Enquiry',
@@ -38,11 +39,17 @@ export interface FieldRule {
   multiline?: boolean;
 }
 
+/** A status message: plain text, or text mixed with links. */
+export type Message = string | (string | { text: string; href: string })[];
+
+/** Why a submission didn't go through: a field needs fixing, or the fields were fine but sending failed. */
+export type FailReason = 'invalid' | 'send';
+
 export interface FormDef {
   fields: Record<string, FieldRule>;
   /** Name of the honeypot field: unique per form, and not a name browsers autofill. */
   honeypot: string;
-  messages: { success: string; error: string };
+  messages: { success: Message } & Record<FailReason, Message>;
 }
 
 const person: Record<'name' | 'email', FieldRule> = {
@@ -63,14 +70,25 @@ const ENQUIRY_SUCCESS =
 const APPLICATION_SUCCESS =
   'Thank you for your interest in NPG Tech Solutions. Your application has been submitted. We will be in touch if a suitable opportunity arises.';
 
-// The email and telephone details are in the footer of every page (and beside the Contact form).
-const errorMessage = (thing: 'enquiry' | 'application') =>
-  `We could not submit your ${thing}. Please check the required fields and try again. If the problem continues, contact us through the email or telephone details listed on this page.`;
+type Thing = 'enquiry' | 'application';
+const failMessages = (thing: Thing): Record<FailReason, Message> => ({
+  // Shown alongside the field errors.
+  invalid: `We could not submit your ${thing}. Please check the highlighted fields and try again.`,
+  // Every field was fine, so don't send them back to the fields. The links make this work on any
+  // page, whether or not it shows the contact details.
+  send: [
+    `We couldn't send your ${thing} just now. Please try again in a few minutes, or reach us directly by `,
+    { text: 'email', href: `mailto:${contact.email}` },
+    ' or ',
+    { text: 'WhatsApp', href: contact.whatsapp },
+    '.',
+  ],
+});
 
 export const FORMS: Record<FormId, FormDef> = {
   contact: {
     honeypot: 'hp_field_x',
-    messages: { success: ENQUIRY_SUCCESS, error: errorMessage('enquiry') },
+    messages: { success: ENQUIRY_SUCCESS, ...failMessages('enquiry') },
     fields: {
       ...person,
       phoneCountry,
@@ -83,7 +101,7 @@ export const FORMS: Record<FormId, FormDef> = {
   },
   application: {
     honeypot: 'hp_field_y',
-    messages: { success: APPLICATION_SUCCESS, error: errorMessage('application') },
+    messages: { success: APPLICATION_SUCCESS, ...failMessages('application') },
     fields: {
       ...person,
       phoneCountry,
@@ -108,7 +126,7 @@ export const FORMS: Record<FormId, FormDef> = {
   },
   scout: {
     honeypot: 'hp_field_z',
-    messages: { success: ENQUIRY_SUCCESS, error: errorMessage('enquiry') },
+    messages: { success: ENQUIRY_SUCCESS, ...failMessages('enquiry') },
     fields: {
       ...person,
       phoneCountry,
